@@ -1,0 +1,24 @@
+{
+  "source": "himalayas",
+  "fixture_role": "exploratory_ec_filtered_page",
+  "not_complete_feed": true,
+  "endpoint": "https://himalayas.app/jobs/api/search",
+  "request_params": {
+    "country": "EC",
+    "exclude_worldwide": "true",
+    "sort": "recent",
+    "page": "1"
+  },
+  "captured_at": "2026-08-02T17:03:28.193510+00:00",
+  "http_status": 200,
+  "content_type": "application/json",
+  "fixture_file": "himalayas_ec_page_1.json",
+  "fixture_sha256": "b39e32b841f8b277c4b94fc4888d17cb30eb725f6dbb1e31e6f8ded29c26c0cf",
+  "source_updated_at_unix": 1785529437,
+  "source_updated_at_interpretation": "Unix seconds observed in payload; verify against documentation before normalization",
+  "total_count": 405,
+  "returned_jobs": 20,
+  "documentation_url": "https://himalayas.app/docs/remote-jobs-api",
+  "robots_url": "https://himalayas.app/robots.txt",
+  "terms_note": "Visible attribution link to himalayas.app is required when displaying job data."
+}

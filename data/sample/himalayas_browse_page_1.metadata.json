@@ -1,0 +1,27 @@
+{
+  "source": "himalayas",
+  "fixture_role": "browse_feed_page_1",
+  "not_complete_feed": true,
+  "purpose": "Offline parser/adapter validation only; not a complete market snapshot.",
+  "endpoint": "https://himalayas.app/jobs/api",
+  "request_params": {
+    "limit": 20,
+    "offset": 0
+  },
+  "captured_at": "2026-08-02T17:38:06.487596+00:00",
+  "http_status": 200,
+  "content_type": "application/json",
+  "fixture_file": "himalayas_browse_page_1.json",
+  "fixture_sha256": "f722f465e4c45735b1dcf7ba23d78e50e9a485b4d33f699ca4a5c01d49832754",
+  "source_updated_at_raw": 1785649720,
+  "source_updated_at_utc": "2026-08-02T05:48:40+00:00",
+  "source_updated_at_unit": "unix_seconds",
+  "source_updated_at_interpretation": "10-digit Unix seconds observed in payload (same band as the exploratory fixture); parsed as 2026-08-02T05:48:40Z. Snapshot-level API refresh time, never a per-job modification date.",
+  "total_count": 94542,
+  "returned_jobs": 20,
+  "adapter_version": "0.1.0",
+  "documentation_url": "https://himalayas.app/docs/remote-jobs-api",
+  "attribution_url": "https://himalayas.app",
+  "robots_url": "https://himalayas.app/robots.txt",
+  "terms_note": "Visible attribution link to himalayas.app is required when displaying job data. At limit=20 the complete feed spans about 4,727 pages; this fixture is page 1 only."
+}

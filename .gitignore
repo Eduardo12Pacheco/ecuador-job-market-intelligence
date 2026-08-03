@@ -1,2 +1,17 @@
 # Local Pi runtime state
 .atl/
+
+# Local tool indexes (regenerable)
+/.codegraph/
+
+# Local design-tool state
+/.impeccable/
+
+# Python and uv runtime artifacts
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local bounded raw capture output (opt-in persistence; manifests stay committable)
+data/raw/

@@ -1,0 +1,743 @@
+{
+  "annotation_date": "2026-08-02",
+  "annotation_method": "Draft evaluation: labels independently drafted by direct inspection of the source-text fields preserved in the development analytics dataset (title_raw, excerpt_raw, description_html_raw; categories_raw is a JSON list and is not used for offset evidence). Every supported label cites an exact quote with half-open Python-style offsets into the exact field value in the analytics record (field[char_start:char_end] == exact_quote); not_supported means no explicit positive evidence was found in the reviewed fields (never that the person or job lacks the skill); uncertain labels capture genuinely ambiguous mentions and are excluded from primary metrics. Labels were NOT copied from matcher predictions: the dataset's skill_evidence.skills is compared with these labels only afterwards. These labels are a draft: they have not been independently reviewed by a second human annotator and are NOT gold or human-reviewed labels.",
+  "attribution_url": "https://himalayas.app",
+  "dataset_type": "development_sample",
+  "dataset_version": "0.1.0",
+  "endpoint": "https://himalayas.app/jobs/api",
+  "evaluation_kind": "skill_extraction_evaluation",
+  "evaluation_status": "draft_evaluation",
+  "evaluation_version": "skill-extraction-development-0.1.0",
+  "labels": [
+    {
+      "evidence": [
+        {
+          "char_end": 146,
+          "char_start": 137,
+          "exact_quote": "AI-native",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicit AI product context: 'long-horizon AI product' / 'not AI-native'; the role is a Senior Machine Learning Engineer.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/bjak/jobs/senior-machine-learning-engineer-851744356"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Zero-match: no explicit evidence for this skill in the reviewed fields.",
+      "skill_id": "skill.git",
+      "source_id": "https://himalayas.app/companies/bjak/jobs/senior-machine-learning-engineer-851744356"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1895,
+          "char_start": 1892,
+          "exact_quote": "GPU",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'GPU-based training and inference systems'.",
+      "skill_id": "skill.gpu",
+      "source_id": "https://himalayas.app/companies/bjak/jobs/senior-machine-learning-engineer-851744356"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Zero-match: no explicit evidence for this skill in the reviewed fields.",
+      "skill_id": "skill.java",
+      "source_id": "https://himalayas.app/companies/bjak/jobs/senior-machine-learning-engineer-851744356"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1873,
+          "char_start": 1870,
+          "exact_quote": "JAX",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'PyTorch / JAX'.",
+      "skill_id": "skill.jax",
+      "source_id": "https://himalayas.app/companies/bjak/jobs/senior-machine-learning-engineer-851744356"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 23,
+          "char_start": 7,
+          "exact_quote": "Machine Learning",
+          "field": "title_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Title explicitly says 'Senior Machine Learning Engineer'.",
+      "skill_id": "skill.machine_learning",
+      "source_id": "https://himalayas.app/companies/bjak/jobs/senior-machine-learning-engineer-851744356"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1841,
+          "char_start": 1835,
+          "exact_quote": "Python",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'Python' in the tech stack.",
+      "skill_id": "skill.python",
+      "source_id": "https://himalayas.app/companies/bjak/jobs/senior-machine-learning-engineer-851744356"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1867,
+          "char_start": 1860,
+          "exact_quote": "PyTorch",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'PyTorch / JAX'.",
+      "skill_id": "skill.pytorch",
+      "source_id": "https://himalayas.app/companies/bjak/jobs/senior-machine-learning-engineer-851744356"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 129,
+          "char_start": 120,
+          "exact_quote": "AI-native",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "uncertain",
+      "notes": "Ambiguous: 'AI-native' appears only in company boilerplate ('applications ... that are not AI-native') for a strategy/operations role; excluded from primary metrics.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/bjak/jobs/strategy-operations-associate-7652220692"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1214,
+          "char_start": 1202,
+          "exact_quote": "AI workflows",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly builds 'AI workflows' and 'AI-powered workflows'.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 2823,
+          "char_start": 2820,
+          "exact_quote": "AWS",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Tech stack explicitly lists 'AWS S3'.",
+      "skill_id": "skill.aws",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Zero-match: no explicit evidence for this skill in the reviewed fields.",
+      "skill_id": "skill.git",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Boundary case: 'JavaScript' appears but there is no Java evidence; java and javascript are distinct taxonomy skills.",
+      "skill_id": "skill.java",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1976,
+          "char_start": 1966,
+          "exact_quote": "JavaScript",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'TypeScript, React, and server-side JavaScript (Node.js)'.",
+      "skill_id": "skill.javascript",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1985,
+          "char_start": 1978,
+          "exact_quote": "Node.js",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'TypeScript, React, and server-side JavaScript (Node.js)'.",
+      "skill_id": "skill.nodejs",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1416,
+          "char_start": 1412,
+          "exact_quote": "RBAC",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: enterprise authentication (SSO/SAML) and RBAC.",
+      "skill_id": "skill.rbac",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1948,
+          "char_start": 1943,
+          "exact_quote": "React",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'TypeScript, React, and server-side JavaScript (Node.js)'.",
+      "skill_id": "skill.react",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1383,
+          "char_start": 1379,
+          "exact_quote": "SAML",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: enterprise authentication (SSO/SAML) and RBAC.",
+      "skill_id": "skill.saml",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1378,
+          "char_start": 1375,
+          "exact_quote": "SSO",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: enterprise authentication (SSO/SAML) and RBAC.",
+      "skill_id": "skill.sso",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1941,
+          "char_start": 1931,
+          "exact_quote": "TypeScript",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'TypeScript, React, and server-side JavaScript (Node.js)'.",
+      "skill_id": "skill.typescript",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Zero-match: no explicit AI evidence in the reviewed fields ('emotional intelligence' is not the AI skill).",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-ios-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 2166,
+          "char_start": 2157,
+          "exact_quote": "Bluetooth",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Listed under Nice to Have: 'Bluetooth/BLE hardware integration'.",
+      "skill_id": "skill.bluetooth",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-ios-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 23,
+          "char_start": 20,
+          "exact_quote": "iOS",
+          "field": "title_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Title and description explicitly require owning the companion iOS app end-to-end.",
+      "skill_id": "skill.ios",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-ios-engineer"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Zero-match/boundary: no JavaScript evidence; the role is iOS/Swift focused.",
+      "skill_id": "skill.javascript",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-ios-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1682,
+          "char_start": 1677,
+          "exact_quote": "Swift",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'Strong proficiency in Swift and the iOS ecosystem'.",
+      "skill_id": "skill.swift",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-full-stack-ios-engineer"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 193,
+          "char_start": 174,
+          "exact_quote": "AI model validation",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly central: 'AI model validation', 'AI safety claims'.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-member-of-technical-staff"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1987,
+          "char_start": 1975,
+          "exact_quote": "data science",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'Strong ML, statistics, and data science fundamentals'.",
+      "skill_id": "skill.data_science",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-member-of-technical-staff"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Zero-match: no explicit evidence for this skill in the reviewed fields.",
+      "skill_id": "skill.git",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-member-of-technical-staff"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Zero-match: no explicit evidence for this skill in the reviewed fields.",
+      "skill_id": "skill.java",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-member-of-technical-staff"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1957,
+          "char_start": 1955,
+          "exact_quote": "ML",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'Strong ML, statistics, and data science fundamentals'.",
+      "skill_id": "skill.machine_learning",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-member-of-technical-staff"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1459,
+          "char_start": 1453,
+          "exact_quote": "Python",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'Write production-quality Python'.",
+      "skill_id": "skill.python",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-member-of-technical-staff"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1969,
+          "char_start": 1959,
+          "exact_quote": "statistics",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly required: 'Strong ML, statistics, and data science fundamentals'.",
+      "skill_id": "skill.statistics",
+      "source_id": "https://himalayas.app/companies/clera/jobs/founding-member-of-technical-staff"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "The reviewed fields mention AI only as product context ('train next-generation AI systems') and explicitly state 'No prior experience in AI is required'. The draft annotation finds no explicit positive evidence that the role requires AI skills; the keyword baseline 0.1.0 does not parse negation, so this prediction is a false positive.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/biglaw-lawyers"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 370,
+          "char_start": 333,
+          "exact_quote": "help train next-generation AI systems",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "uncertain",
+      "notes": "Ambiguous: 'train next-generation AI systems' describes the project context for a data-tools role, not clearly a required skill; excluded from primary metrics.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1313,
+          "char_start": 1310,
+          "exact_quote": "AWS",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.aws",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 993,
+          "char_start": 988,
+          "exact_quote": "Azure",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.azure",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1552,
+          "char_start": 1540,
+          "exact_quote": "BrowserStack",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.browserstack",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 2420,
+          "char_start": 2410,
+          "exact_quote": "Databricks",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.databricks",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1526,
+          "char_start": 1519,
+          "exact_quote": "Datadog",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.datadog",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1330,
+          "char_start": 1322,
+          "exact_quote": "Firebase",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.firebase",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Boundary case: only 'GitHub' appears in the reviewed fields; there is no explicit git evidence. git and github are distinct taxonomy skills.",
+      "skill_id": "skill.git",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 986,
+          "char_start": 980,
+          "exact_quote": "GitHub",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.github",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Zero-match: no explicit evidence for this skill in the reviewed fields.",
+      "skill_id": "skill.java",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1013,
+          "char_start": 1009,
+          "exact_quote": "JIRA",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.jira",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1382,
+          "char_start": 1376,
+          "exact_quote": "Linear",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.linear",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1003,
+          "char_start": 995,
+          "exact_quote": "Metabase",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.metabase",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1396,
+          "char_start": 1393,
+          "exact_quote": "n8n",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.n8n",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1391,
+          "char_start": 1384,
+          "exact_quote": "Postman",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.postman",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Zero-match: no explicit evidence for this skill in the reviewed fields.",
+      "skill_id": "skill.python",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1534,
+          "char_start": 1528,
+          "exact_quote": "Sentry",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.sentry",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 1517,
+          "char_start": 1510,
+          "exact_quote": "Tableau",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.tableau",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 2408,
+          "char_start": 2402,
+          "exact_quote": "Twilio",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "supported",
+      "notes": "Explicitly listed in the reviewed description.",
+      "skill_id": "skill.twilio",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "The reviewed fields mention AI only as product context ('train next-generation AI systems') and explicitly state 'No prior experience in AI is required'. The draft annotation finds no explicit positive evidence that the role requires AI skills; the keyword baseline 0.1.0 does not parse negation, so this prediction is a false positive.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/german-audio-recording-expert"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Zero-match: no explicit evidence for this skill in the reviewed fields.",
+      "skill_id": "skill.java",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/german-audio-recording-expert"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 888,
+          "char_start": 850,
+          "exact_quote": "advanced machine learning applications",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "uncertain",
+      "notes": "Ambiguous: machine learning appears as the downstream use of the recordings ('datasets for advanced machine learning applications'), not as a required skill of the role; excluded from primary metrics.",
+      "skill_id": "skill.machine_learning",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/german-audio-recording-expert"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "The reviewed fields mention AI only as product context ('train next-generation AI systems') and explicitly state 'No prior experience in AI is required'. The draft annotation finds no explicit positive evidence that the role requires AI skills; the keyword baseline 0.1.0 does not parse negation, so this prediction is a false positive.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/italian-audio-recording-expert"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "The reviewed fields mention AI only as product context ('train next-generation AI systems') and explicitly state 'No prior experience in AI is required'. The draft annotation finds no explicit positive evidence that the role requires AI skills; the keyword baseline 0.1.0 does not parse negation, so this prediction is a false positive.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/mandarin-audio-recording-expert"
+    },
+    {
+      "evidence": [
+        {
+          "char_end": 260,
+          "char_start": 231,
+          "exact_quote": "developing advanced AI models",
+          "field": "description_html_raw"
+        }
+      ],
+      "label": "uncertain",
+      "notes": "Ambiguous: 'developing advanced AI models' is project context for a recording role, not evidence of a machine-learning skill requirement; excluded from primary metrics.",
+      "skill_id": "skill.machine_learning",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/mandarin-audio-recording-expert"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "The reviewed fields mention AI only as product context ('train next-generation AI systems') and explicitly state 'No prior experience in AI is required'. The draft annotation finds no explicit positive evidence that the role requires AI skills; the keyword baseline 0.1.0 does not parse negation, so this prediction is a false positive.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/physics-expert-biophysics-statistical-physics"
+    },
+    {
+      "evidence": [],
+      "label": "not_supported",
+      "notes": "Boundary case: 'Statistical Physics' appears in the title/excerpt but the word 'statistics' does not; the taxonomy skill statistics is not explicitly evidenced.",
+      "skill_id": "skill.statistics",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/physics-expert-biophysics-statistical-physics"
+    }
+  ],
+  "matcher_version": "keyword-baseline-0.1.0",
+  "sample": {
+    "complete": false,
+    "limit": 20,
+    "limitations": [
+      "development_sample: exactly 20 records from one bounded page (limit=20, offset=0) of one source (himalayas), snapshot cap_0370798f7af4b0e3, complete: false",
+      "not market coverage: one page of one job board is not a market snapshot and no whole-market claim is made"
+    ],
+    "offset": 0,
+    "page": 1,
+    "records": 20,
+    "warning": "development_sample: 20 records, one page, complete: false; not a full feed and not market coverage"
+  },
+  "snapshot_id": "cap_0370798f7af4b0e3",
+  "source": "himalayas",
+  "taxonomy_version": "technical-skills-0.1.0"
+}

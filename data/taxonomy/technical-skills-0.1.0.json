@@ -1,0 +1,334 @@
+{
+  "version": "technical-skills-0.1.0",
+  "categories": [
+    "programming_language",
+    "framework_library",
+    "ml_ai",
+    "cloud_platform",
+    "data_platform",
+    "developer_tool",
+    "mobile",
+    "security_identity"
+  ],
+  "rules": {
+    "term_types": "every skill declares two search-term fields: keywords (canonical searchable terms, required and non-empty) and aliases (alternate spellings and abbreviations, may be empty); both are matched with the same boundary-safe rules, keywords are iterated before aliases, and a term is unique across the whole taxonomy (keywords and aliases alike are rejected at load time if duplicated)",
+    "case_handling": "matching is case-insensitive: the term and the searched text are both casefolded before matching",
+    "boundary_matching": "terms match only at word boundaries ((?<!\\w) term (?!\\w) on the casefolded text); a term never matches inside a larger word, so 'java' cannot match 'javascript', 'ml' cannot match 'html'/'similar', and 'git' cannot match 'github'",
+    "connector_variants": "whitespace, '-', '_' and '/' between the words of a multi-word term are interchangeable, so 'machine learning' matches 'machine-learning' and 'machine_learning'; punctuation inside a single-token term (C++, C#, n8n) is matched literally, and versioned spellings such as 'C++17' are deliberately not matched in 0.1.0",
+    "fields_searched": "title_raw, excerpt_raw, categories_raw (joined with spaces), description_html_raw (converted to visible text); searched in that fixed order",
+    "html_handling": "description_html_raw is converted to visible text for matching only (tags stripped, HTML entities unescaped, whitespace collapsed); the raw field is never modified",
+    "evidence_behavior": "one evidence entry per (field, matched term) recording the term, its type (keyword or alias), the first-occurrence excerpt, and an occurrence count; a skill is listed at most once per record; evidence is ordered by searched-field order, then taxonomy definition order (keywords before aliases)",
+    "deduplication": "duplicate terms — keywords or aliases — are rejected at taxonomy load time (fail-closed); duplicate occurrences of the same term in one field collapse into one evidence entry with occurrence_count",
+    "missing_fields": "missing or empty fields are skipped and reported in skipped_fields; they are never coerced into evidence",
+    "no_match": "a record without any match is represented as evidence_status 'no_evidence' with an empty skills list; no_evidence is not evidence of absence",
+    "negation": "0.1.0 does not parse negation or context (for example 'no prior experience in AI is required' still matches 'ai'); a match is keyword evidence only"
+  },
+  "excluded_terms": {
+    "go": "excluded: word-boundary matching cannot distinguish the Go language from the common English verb 'go'",
+    "r": "excluded: a single-letter alias would be unsafe under boundary matching",
+    "js": "excluded: over-broad standalone abbreviation; 'javascript' is matched instead",
+    "ts": "excluded: over-broad standalone abbreviation; 'typescript' is matched instead",
+    "sql": "reserved: not evidenced in the 20-record development sample; may be added in a later taxonomy version",
+    "docker": "reserved: not evidenced in the 20-record development sample; may be added in a later taxonomy version",
+    "kubernetes": "reserved: not evidenced in the 20-record development sample; may be added in a later taxonomy version",
+    "tensorflow": "reserved: not evidenced in the 20-record development sample; may be added in a later taxonomy version"
+  },
+  "skills": [
+    {
+      "skill_id": "skill.python",
+      "name": "Python",
+      "category": "programming_language",
+      "keywords": ["python"],
+      "aliases": [],
+      "notes": "Evidenced in the 20-record development sample (ML engineer and technical-staff roles)."
+    },
+    {
+      "skill_id": "skill.javascript",
+      "name": "JavaScript",
+      "category": "programming_language",
+      "keywords": ["javascript"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample ('server-side JavaScript')."
+    },
+    {
+      "skill_id": "skill.typescript",
+      "name": "TypeScript",
+      "category": "programming_language",
+      "keywords": ["typescript"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (full-stack role)."
+    },
+    {
+      "skill_id": "skill.java",
+      "name": "Java",
+      "category": "programming_language",
+      "keywords": ["java"],
+      "aliases": [],
+      "notes": "Core language entry; not evidenced in the 20-record development sample."
+    },
+    {
+      "skill_id": "skill.cpp",
+      "name": "C++",
+      "category": "programming_language",
+      "keywords": ["c++"],
+      "aliases": ["cpp"],
+      "notes": "Core language entry; not evidenced in the 20-record development sample. Versioned spellings such as 'C++17' are not matched in 0.1.0 (conservative)."
+    },
+    {
+      "skill_id": "skill.csharp",
+      "name": "C#",
+      "category": "programming_language",
+      "keywords": ["c#"],
+      "aliases": ["csharp"],
+      "notes": "Core language entry; not evidenced in the 20-record development sample."
+    },
+    {
+      "skill_id": "skill.swift",
+      "name": "Swift",
+      "category": "programming_language",
+      "keywords": ["swift"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (iOS engineer role)."
+    },
+    {
+      "skill_id": "skill.react",
+      "name": "React",
+      "category": "framework_library",
+      "keywords": ["react"],
+      "aliases": ["reactjs", "react.js", "react js"],
+      "notes": "Evidenced in the development sample (full-stack role)."
+    },
+    {
+      "skill_id": "skill.nodejs",
+      "name": "Node.js",
+      "category": "framework_library",
+      "keywords": ["node.js"],
+      "aliases": ["nodejs", "node js"],
+      "notes": "Evidenced in the development sample (full-stack role)."
+    },
+    {
+      "skill_id": "skill.pytorch",
+      "name": "PyTorch",
+      "category": "ml_ai",
+      "keywords": ["pytorch"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (ML engineer role)."
+    },
+    {
+      "skill_id": "skill.jax",
+      "name": "JAX",
+      "category": "ml_ai",
+      "keywords": ["jax"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (ML engineer role)."
+    },
+    {
+      "skill_id": "skill.machine_learning",
+      "name": "Machine Learning",
+      "category": "ml_ai",
+      "keywords": ["machine learning"],
+      "aliases": ["ml"],
+      "notes": "Evidenced in the development sample. The short alias 'ml' is word-boundary matched and may rarely collide with the milliliter abbreviation."
+    },
+    {
+      "skill_id": "skill.ai",
+      "name": "Artificial Intelligence (AI)",
+      "category": "ml_ai",
+      "keywords": ["ai"],
+      "aliases": ["artificial intelligence"],
+      "notes": "Evidenced widely in the development sample. Keyword evidence only: negation and context are not parsed in 0.1.0."
+    },
+    {
+      "skill_id": "skill.data_science",
+      "name": "Data Science",
+      "category": "ml_ai",
+      "keywords": ["data science"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data tooling and technical-staff roles)."
+    },
+    {
+      "skill_id": "skill.statistics",
+      "name": "Statistics",
+      "category": "ml_ai",
+      "keywords": ["statistics"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (technical-staff role)."
+    },
+    {
+      "skill_id": "skill.gpu",
+      "name": "GPU",
+      "category": "ml_ai",
+      "keywords": ["gpu"],
+      "aliases": ["gpus"],
+      "notes": "Evidenced in the development sample (GPU-based training and inference)."
+    },
+    {
+      "skill_id": "skill.aws",
+      "name": "Amazon Web Services (AWS)",
+      "category": "cloud_platform",
+      "keywords": ["aws"],
+      "aliases": ["amazon web services"],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.azure",
+      "name": "Microsoft Azure",
+      "category": "cloud_platform",
+      "keywords": ["azure"],
+      "aliases": ["microsoft azure"],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.firebase",
+      "name": "Firebase",
+      "category": "cloud_platform",
+      "keywords": ["firebase"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.databricks",
+      "name": "Databricks",
+      "category": "data_platform",
+      "keywords": ["databricks"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.tableau",
+      "name": "Tableau",
+      "category": "data_platform",
+      "keywords": ["tableau"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.metabase",
+      "name": "Metabase",
+      "category": "data_platform",
+      "keywords": ["metabase"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.git",
+      "name": "Git",
+      "category": "developer_tool",
+      "keywords": ["git"],
+      "aliases": [],
+      "notes": "Core developer-tool entry; not evidenced verbatim in the 20-record development sample (only 'GitHub' appears)."
+    },
+    {
+      "skill_id": "skill.github",
+      "name": "GitHub",
+      "category": "developer_tool",
+      "keywords": ["github"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.jira",
+      "name": "Jira",
+      "category": "developer_tool",
+      "keywords": ["jira"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.postman",
+      "name": "Postman",
+      "category": "developer_tool",
+      "keywords": ["postman"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.linear",
+      "name": "Linear",
+      "category": "developer_tool",
+      "keywords": ["linear"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample as the issue-tracking tool; word-boundary matched, so it may rarely collide with the English adjective 'linear'."
+    },
+    {
+      "skill_id": "skill.n8n",
+      "name": "n8n",
+      "category": "developer_tool",
+      "keywords": ["n8n"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role); matched literally."
+    },
+    {
+      "skill_id": "skill.sentry",
+      "name": "Sentry",
+      "category": "developer_tool",
+      "keywords": ["sentry"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.datadog",
+      "name": "Datadog",
+      "category": "developer_tool",
+      "keywords": ["datadog"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.browserstack",
+      "name": "BrowserStack",
+      "category": "developer_tool",
+      "keywords": ["browserstack"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.twilio",
+      "name": "Twilio",
+      "category": "developer_tool",
+      "keywords": ["twilio"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (data-tooling role)."
+    },
+    {
+      "skill_id": "skill.ios",
+      "name": "iOS",
+      "category": "mobile",
+      "keywords": ["ios"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (iOS engineer role)."
+    },
+    {
+      "skill_id": "skill.bluetooth",
+      "name": "Bluetooth",
+      "category": "mobile",
+      "keywords": ["bluetooth"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (wearable/iOS role, 'Bluetooth/BLE hardware integration')."
+    },
+    {
+      "skill_id": "skill.saml",
+      "name": "SAML",
+      "category": "security_identity",
+      "keywords": ["saml"],
+      "aliases": [],
+      "notes": "Evidenced in the development sample (enterprise authentication)."
+    },
+    {
+      "skill_id": "skill.sso",
+      "name": "SSO",
+      "category": "security_identity",
+      "keywords": ["sso"],
+      "aliases": ["single sign on"],
+      "notes": "Evidenced in the development sample (SSO/SAML enterprise infrastructure)."
+    },
+    {
+      "skill_id": "skill.rbac",
+      "name": "RBAC",
+      "category": "security_identity",
+      "keywords": ["rbac"],
+      "aliases": ["role based access control"],
+      "notes": "Evidenced in the development sample (role-based access control)."
+    }
+  ]
+}

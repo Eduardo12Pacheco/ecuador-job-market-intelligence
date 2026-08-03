@@ -1,0 +1,14 @@
+# Configuración local mínima para la mesa de evidencia (publicación en local).
+# Oculta la barra de herramientas y el menú (Stop/Deploy), no muestra detalles
+# internos de errores y desactiva la recolección de estadísticas de uso.
+# No se configura ningún acceso externo: la mesa funciona sin conexión.
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = "none"
+
+[browser]
+gatherUsageStats = false
+
+[server]
+headless = true

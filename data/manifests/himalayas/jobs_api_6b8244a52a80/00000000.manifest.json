@@ -1,0 +1,29 @@
+{
+  "adapter_version": "0.1.0",
+  "attribution_url": "https://himalayas.app",
+  "capture_id": "cap_0370798f7af4b0e3",
+  "captured_at": "2026-08-02T18:32:15.609500+00:00",
+  "complete": false,
+  "content_type": "application/json",
+  "endpoint": "https://himalayas.app/jobs/api",
+  "errors": [],
+  "http_status": 200,
+  "limit": 20,
+  "manifest_version": 1,
+  "offset": 0,
+  "raw_file_path": "data/raw/himalayas/jobs_api_6b8244a52a80/00000000.json",
+  "raw_sha256": "0370798f7af4b0e39ab92fd0d486577f58cdd415812e612d6b86657ac07ab101",
+  "request_params": {
+    "limit": 20,
+    "offset": 0
+  },
+  "returned_jobs": 20,
+  "source": "himalayas",
+  "timestamp_unit": "unix_seconds",
+  "total_count": 94520,
+  "updated_at_raw": 1785649720,
+  "updated_at_utc": "2026-08-02T05:48:40+00:00",
+  "warnings": [
+    "bounded_single_page_capture: exactly one page (limit=20, offset=0) was requested and persisted; this is not a complete-feed capture and no whole-market coverage is claimed"
+  ]
+}

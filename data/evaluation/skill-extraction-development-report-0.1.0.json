@@ -1,0 +1,545 @@
+{
+  "annotation_date": "2026-08-02",
+  "attribution_url": "https://himalayas.app",
+  "coverage": {
+    "annotated_record_coverage": 0.55,
+    "annotated_record_ids": [
+      "https://himalayas.app/companies/bjak/jobs/senior-machine-learning-engineer-851744356",
+      "https://himalayas.app/companies/bjak/jobs/strategy-operations-associate-7652220692",
+      "https://himalayas.app/companies/clera/jobs/founding-full-stack-engineer",
+      "https://himalayas.app/companies/clera/jobs/founding-full-stack-ios-engineer",
+      "https://himalayas.app/companies/clera/jobs/founding-member-of-technical-staff",
+      "https://himalayas.app/companies/micro1/jobs/biglaw-lawyers",
+      "https://himalayas.app/companies/micro1/jobs/engineering-data-tools-specialist",
+      "https://himalayas.app/companies/micro1/jobs/german-audio-recording-expert",
+      "https://himalayas.app/companies/micro1/jobs/italian-audio-recording-expert",
+      "https://himalayas.app/companies/micro1/jobs/mandarin-audio-recording-expert",
+      "https://himalayas.app/companies/micro1/jobs/physics-expert-biophysics-statistical-physics"
+    ],
+    "annotated_records": 11,
+    "definition": "pair coverage = labeled pairs / (dataset records x taxonomy skills); annotated records = distinct source ids with at least one label",
+    "labeled_pairs": 60,
+    "non_uncertain_labeled_pairs": 56,
+    "non_uncertain_pair_coverage": 0.07567567567567568,
+    "pair_coverage": 0.08108108108108109,
+    "total_pairs": 740
+  },
+  "dataset_type": "development_sample",
+  "dataset_version": "0.1.0",
+  "definitions": {
+    "coverage": "labeled pairs over all dataset-record x taxonomy-skill pairs, plus annotated records",
+    "macro": "unweighted mean of per-skill precision/recall/F1 over taxonomy skills with at least one non-uncertain labeled pair; skills with no defined value (all labels not_supported) are excluded and listed explicitly",
+    "primary_micro": "pair-level contingency pooled over all non-uncertain labeled pairs: supported+predicted=TP, supported+not predicted=FN, not_supported+predicted=FP, not_supported+not predicted=TN; precision=TP/(TP+FP), recall=TP/(TP+FN), F1=2*P*R/(P+R) with safe zero denominators",
+    "uncertain": "ambiguous mentions reported separately and excluded from every primary denominator"
+  },
+  "endpoint": "https://himalayas.app/jobs/api",
+  "evaluation_kind": "skill_extraction_evaluation",
+  "evaluation_status": "draft_evaluation",
+  "evaluation_version": "skill-extraction-development-0.1.0",
+  "false_negatives": [],
+  "false_positives": [
+    {
+      "label": "not_supported",
+      "matcher_evidence": {
+        "excerpt": "\u2026to help train next-generation AI systems. Your work will shape\u2026",
+        "field": "description_html_raw",
+        "matched_term": "ai",
+        "term_type": "keyword"
+      },
+      "notes": "The reviewed fields mention AI only as product context ('train next-generation AI systems') and explicitly state 'No prior experience in AI is required'. The draft annotation finds no explicit positive evidence that the role requires AI skills; the keyword baseline 0.1.0 does not parse negation, so this prediction is a false positive.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/biglaw-lawyers"
+    },
+    {
+      "label": "not_supported",
+      "matcher_evidence": {
+        "excerpt": "\u2026to help train next-generation AI systems. Your work will shape\u2026",
+        "field": "description_html_raw",
+        "matched_term": "ai",
+        "term_type": "keyword"
+      },
+      "notes": "The reviewed fields mention AI only as product context ('train next-generation AI systems') and explicitly state 'No prior experience in AI is required'. The draft annotation finds no explicit positive evidence that the role requires AI skills; the keyword baseline 0.1.0 does not parse negation, so this prediction is a false positive.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/german-audio-recording-expert"
+    },
+    {
+      "label": "not_supported",
+      "matcher_evidence": {
+        "excerpt": "\u2026to help train next-generation AI systems. Your work will shape\u2026",
+        "field": "description_html_raw",
+        "matched_term": "ai",
+        "term_type": "keyword"
+      },
+      "notes": "The reviewed fields mention AI only as product context ('train next-generation AI systems') and explicitly state 'No prior experience in AI is required'. The draft annotation finds no explicit positive evidence that the role requires AI skills; the keyword baseline 0.1.0 does not parse negation, so this prediction is a false positive.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/italian-audio-recording-expert"
+    },
+    {
+      "label": "not_supported",
+      "matcher_evidence": {
+        "excerpt": "\u2026ocused on developing advanced AI models.",
+        "field": "excerpt_raw",
+        "matched_term": "ai",
+        "term_type": "keyword"
+      },
+      "notes": "The reviewed fields mention AI only as product context ('train next-generation AI systems') and explicitly state 'No prior experience in AI is required'. The draft annotation finds no explicit positive evidence that the role requires AI skills; the keyword baseline 0.1.0 does not parse negation, so this prediction is a false positive.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/mandarin-audio-recording-expert"
+    },
+    {
+      "label": "not_supported",
+      "matcher_evidence": {
+        "excerpt": "\u2026to help train next-generation AI systems. Your work will shape\u2026",
+        "field": "description_html_raw",
+        "matched_term": "ai",
+        "term_type": "keyword"
+      },
+      "notes": "The reviewed fields mention AI only as product context ('train next-generation AI systems') and explicitly state 'No prior experience in AI is required'. The draft annotation finds no explicit positive evidence that the role requires AI skills; the keyword baseline 0.1.0 does not parse negation, so this prediction is a false positive.",
+      "skill_id": "skill.ai",
+      "source_id": "https://himalayas.app/companies/micro1/jobs/physics-expert-biophysics-statistical-physics"
+    }
+  ],
+  "guardrails": [
+    "labels are draft, not gold or human-reviewed; metrics are provisional",
+    "uncertain labels are excluded from all primary denominators and reported separately",
+    "unlabeled pairs are excluded from the metrics, never treated as false positives or negatives",
+    "not_supported means no explicit positive evidence in the reviewed fields, never that the person or job lacks the skill",
+    "no market coverage: one page of one job board is not a market snapshot"
+  ],
+  "label_distribution": {
+    "not_supported": 18,
+    "supported": 38,
+    "total": 60,
+    "uncertain": 4
+  },
+  "limitations": [
+    "development sample: exactly 20 records from one page (limit=20, offset=0) of one source, snapshot cap_0370798f7af4b0e3, complete: false; this is not a full feed and not market coverage",
+    "label coverage is partial: 56 of 740 non-uncertain labeled pairs in this draft set",
+    "the keyword baseline 0.1.0 does not parse negation; the draft false positives are AI mentions in roles that explicitly state AI experience is not required",
+    "no semantic, LLM, or embedding analysis was used for labels or predictions"
+  ],
+  "matcher_version": "keyword-baseline-0.1.0",
+  "metrics": {
+    "macro": {
+      "f1": 0.9862258953168045,
+      "per_skill": {
+        "skill.ai": {
+          "f1": 0.5454545454545454,
+          "fn": 0,
+          "fp": 5,
+          "precision": 0.375,
+          "recall": 1.0,
+          "tn": 1,
+          "tp": 3
+        },
+        "skill.aws": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 2
+        },
+        "skill.azure": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.bluetooth": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.browserstack": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.data_science": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.databricks": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.datadog": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.firebase": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.git": {
+          "f1": null,
+          "fn": 0,
+          "fp": 0,
+          "precision": null,
+          "recall": null,
+          "tn": 4,
+          "tp": 0
+        },
+        "skill.github": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.gpu": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.ios": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.java": {
+          "f1": null,
+          "fn": 0,
+          "fp": 0,
+          "precision": null,
+          "recall": null,
+          "tn": 5,
+          "tp": 0
+        },
+        "skill.javascript": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 1,
+          "tp": 1
+        },
+        "skill.jax": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.jira": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.linear": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.machine_learning": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 2
+        },
+        "skill.metabase": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.n8n": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.nodejs": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.postman": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.python": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 1,
+          "tp": 2
+        },
+        "skill.pytorch": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.rbac": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.react": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.saml": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.sentry": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.sso": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.statistics": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 1,
+          "tp": 1
+        },
+        "skill.swift": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.tableau": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.twilio": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        },
+        "skill.typescript": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "tn": 0,
+          "tp": 1
+        }
+      },
+      "precision": 0.9810606060606061,
+      "recall": 1.0,
+      "scope_note": "macro scope: taxonomy skills with at least one non-uncertain labeled pair; per-skill precision/recall/F1 are computed over that skill's own labeled pairs and then averaged unweighted over the skills whose value is defined; a skill whose labels are all not_supported has no positive gold or prediction and no defined per-skill metric",
+      "skills_excluded_undefined": [
+        "skill.git",
+        "skill.java"
+      ],
+      "skills_in_scope": [
+        "skill.ai",
+        "skill.aws",
+        "skill.azure",
+        "skill.bluetooth",
+        "skill.browserstack",
+        "skill.data_science",
+        "skill.databricks",
+        "skill.datadog",
+        "skill.firebase",
+        "skill.git",
+        "skill.github",
+        "skill.gpu",
+        "skill.ios",
+        "skill.java",
+        "skill.javascript",
+        "skill.jax",
+        "skill.jira",
+        "skill.linear",
+        "skill.machine_learning",
+        "skill.metabase",
+        "skill.n8n",
+        "skill.nodejs",
+        "skill.postman",
+        "skill.python",
+        "skill.pytorch",
+        "skill.rbac",
+        "skill.react",
+        "skill.saml",
+        "skill.sentry",
+        "skill.sso",
+        "skill.statistics",
+        "skill.swift",
+        "skill.tableau",
+        "skill.twilio",
+        "skill.typescript"
+      ]
+    },
+    "micro": {
+      "denominator_pairs": 56,
+      "f1": 0.9382716049382717,
+      "precision": 0.8837209302325582,
+      "recall": 1.0,
+      "scope_note": "micro metrics pool all non-uncertain labeled pairs (each pair contributes equally); identical to the primary metrics by definition"
+    },
+    "primary": {
+      "denominators": {
+        "tp_fn": 38,
+        "tp_fp": 43
+      },
+      "f1": 0.9382716049382717,
+      "fn": 0,
+      "fp": 5,
+      "note": "primary metrics pool every non-uncertain labeled pair (micro); precision/recall are undefined (None) when the denominator is zero, F1 is 0.0 when at least one of them is defined as 0",
+      "precision": 0.8837209302325582,
+      "recall": 1.0,
+      "tn": 13,
+      "tp": 38
+    },
+    "uncertain": {
+      "count": 4,
+      "excluded_note": "uncertain labels are reported separately and excluded from all primary denominators and from the macro scope"
+    }
+  },
+  "predictions_summary": {
+    "note": "predicted pairs without a label are excluded from the metrics entirely; they are never treated as false positives or negatives",
+    "predicted_pairs": 56,
+    "unlabeled_predicted_pairs": 10
+  },
+  "record_summary": {
+    "no_evidence_record_ids": [],
+    "record_count": 20,
+    "records_with_evidence": 20,
+    "records_without_evidence": 0
+  },
+  "report_version": "0.1.0",
+  "sample": {
+    "complete": false,
+    "limit": 20,
+    "limitations": [
+      "development_sample: exactly 20 records from one bounded page (limit=20, offset=0) of one source (himalayas), snapshot cap_0370798f7af4b0e3, complete: false",
+      "not market coverage: one page of one job board is not a market snapshot and no whole-market claim is made"
+    ],
+    "offset": 0,
+    "page": 1,
+    "records": 20,
+    "total_count": 94520,
+    "warning": "development_sample: 20 records, one page, complete: false; not a full feed and not market coverage"
+  },
+  "snapshot_id": "cap_0370798f7af4b0e3",
+  "source": "himalayas",
+  "taxonomy_version": "technical-skills-0.1.0",
+  "warnings": [
+    "draft_evaluation: labels were independently drafted from direct source-text inspection and are NOT human-reviewed or gold; every metric on this report is provisional",
+    "this draft contains no false negatives (FN=0): the curated positives were chosen where the keyword baseline is strong; this reflects the curated draft set, not the market"
+  ]
+}
