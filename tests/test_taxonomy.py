@@ -84,9 +84,7 @@ def write_tmp_taxonomy(tmp_path: Path, doc: dict) -> Path:
 
 class TestCommittedArtifact:
     def test_artifact_exists_and_loads(self) -> None:
-        assert ARTIFACT_PATH.exists(), (
-            "el artefacto de taxonomía confirmado debe existir en " + str(ARTIFACT_PATH)
-        )
+        assert ARTIFACT_PATH.exists(), "el artefacto de taxonomía confirmado debe existir en " + str(ARTIFACT_PATH)
         taxonomy = load_taxonomy(ARTIFACT_PATH)
         assert taxonomy.version == "technical-skills-0.1.0"
 
@@ -107,9 +105,7 @@ class TestCommittedArtifact:
 
     def test_artifact_terms_unique_across_keywords_and_aliases(self) -> None:
         taxonomy = load_taxonomy(ARTIFACT_PATH)
-        terms = [
-            term for skill in taxonomy.skills for term in (*skill.keywords, *skill.aliases)
-        ]
+        terms = [term for skill in taxonomy.skills for term in (*skill.keywords, *skill.aliases)]
         assert len(terms) == len(set(terms)), "los términos duplicados no deben publicarse"
 
     def test_artifact_documents_every_matching_rule(self) -> None:

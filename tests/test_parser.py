@@ -14,9 +14,10 @@ import hashlib
 import json
 from collections import Counter
 from dataclasses import fields
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
+from conftest import BROWSE_ENDPOINT, BROWSE_FIXTURE_SHA256, BROWSE_METADATA_JSON, FIXTURE_SHA256
 
 from job_market_intelligence.ingestion.adapter import ADAPTER_VERSION
 from job_market_intelligence.ingestion.errors import MalformedResponseError, TimestampError
@@ -28,13 +29,11 @@ from job_market_intelligence.ingestion.models import (
 )
 from job_market_intelligence.ingestion.parser import SOURCE, canonical_id_for, parse_job, parse_page
 
-from conftest import BROWSE_ENDPOINT, BROWSE_FIXTURE_SHA256, BROWSE_METADATA_JSON, FIXTURE_SHA256
-
-CAPTURED_AT = datetime(2026, 8, 2, 17, 3, 28, tzinfo=timezone.utc)
-FIXTURE_UPDATED_AT_UTC = datetime(2026, 7, 31, 20, 23, 57, tzinfo=timezone.utc)
+CAPTURED_AT = datetime(2026, 8, 2, 17, 3, 28, tzinfo=UTC)
+FIXTURE_UPDATED_AT_UTC = datetime(2026, 7, 31, 20, 23, 57, tzinfo=UTC)
 # Hora de captura real del accesorio de navegación (ver su sidecar de metadatos).
-BROWSE_CAPTURED_AT = datetime(2026, 8, 2, 17, 38, 6, 487596, tzinfo=timezone.utc)
-BROWSE_UPDATED_AT_UTC = datetime(2026, 8, 2, 5, 48, 40, tzinfo=timezone.utc)
+BROWSE_CAPTURED_AT = datetime(2026, 8, 2, 17, 38, 6, 487596, tzinfo=UTC)
+BROWSE_UPDATED_AT_UTC = datetime(2026, 8, 2, 5, 48, 40, tzinfo=UTC)
 
 
 class TestFixtureIntegrity:
@@ -162,8 +161,8 @@ class TestParseJob:
         assert job.salary_period_raw == "annual"
         assert job.currency_raw == "USD"
         assert job.published_at_raw == raw["pubDate"]
-        assert job.published_at_utc == datetime.fromtimestamp(raw["pubDate"], tz=timezone.utc)
-        assert job.expires_at_utc == datetime.fromtimestamp(raw["expiryDate"], tz=timezone.utc)
+        assert job.published_at_utc == datetime.fromtimestamp(raw["pubDate"], tz=UTC)
+        assert job.expires_at_utc == datetime.fromtimestamp(raw["expiryDate"], tz=UTC)
         assert job.observation_status is ObservationStatus.ACTIVE
         assert job.quality_flags == []
 
@@ -269,7 +268,7 @@ class TestParseJob:
             captured_at=CAPTURED_AT,
             expected_unit=TimestampUnit.UNIX_SECONDS,
         )
-        assert job.published_at_utc == datetime.fromtimestamp(1785529437, tz=timezone.utc)
+        assert job.published_at_utc == datetime.fromtimestamp(1785529437, tz=UTC)
         assert "timestamp_unit_divergence:pubDate" in job.quality_flags
 
     def test_expired_observation(self) -> None:
@@ -312,7 +311,7 @@ class TestParseJob:
             expected_unit=TimestampUnit.UNKNOWN,
         )
         assert not any(flag.startswith("timestamp_unit_divergence") for flag in job.quality_flags)
-        assert job.published_at_utc == datetime.fromtimestamp(1785529437, tz=timezone.utc)
+        assert job.published_at_utc == datetime.fromtimestamp(1785529437, tz=UTC)
 
     def test_updated_at_is_not_a_canonical_job_field(self) -> None:
         names = {field.name for field in fields(CanonicalJob)}
@@ -320,7 +319,5 @@ class TestParseJob:
         assert "api_updated_at_utc" not in names
         assert not any("updated_at" in name for name in names)
         # El valor a nivel de instantánea lo expone parse_page en su lugar.
-        page = parse_page(
-            {"updatedAt": 1785529437, "offset": 0, "limit": 20, "totalCount": 0, "jobs": []}
-        )
+        page = parse_page({"updatedAt": 1785529437, "offset": 0, "limit": 20, "totalCount": 0, "jobs": []})
         assert page.updated_at_raw == 1785529437

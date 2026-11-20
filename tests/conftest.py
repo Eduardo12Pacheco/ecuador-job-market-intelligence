@@ -14,7 +14,7 @@ accesorios versionados bajo ``data/sample``:
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
@@ -31,7 +31,7 @@ BROWSE_FIXTURE_SHA256 = "f722f465e4c45735b1dcf7ba23d78e50e9a485b4d33f699ca4a5c01
 BROWSE_ENDPOINT = "https://himalayas.app/jobs/api"
 
 # Reloj fijo para que la clasificación de caducidad nunca dependa del tiempo real.
-FIXED_CAPTURED_AT = datetime(2026, 8, 2, 17, 3, 28, 193510, tzinfo=timezone.utc)
+FIXED_CAPTURED_AT = datetime(2026, 8, 2, 17, 3, 28, 193510, tzinfo=UTC)
 JSON_HEADERS = {"content-type": "application/json"}
 
 

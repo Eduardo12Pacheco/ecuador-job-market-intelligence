@@ -8,7 +8,7 @@ inverosímiles en lugar de interpretarlos silenciosamente.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -16,7 +16,7 @@ from job_market_intelligence.ingestion.errors import TimestampError
 from job_market_intelligence.ingestion.models import TimestampUnit
 from job_market_intelligence.ingestion.parser import parse_unix_timestamp
 
-EXPECTED_UTC = datetime(2026, 7, 31, 20, 23, 57, tzinfo=timezone.utc)
+EXPECTED_UTC = datetime(2026, 7, 31, 20, 23, 57, tzinfo=UTC)
 
 
 class TestParseUnixTimestamp:

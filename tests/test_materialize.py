@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 
 import pytest
+from conftest import BROWSE_ENDPOINT, BROWSE_SAMPLE_JSON
 
 from job_market_intelligence.analysis.dataset import DatasetError, DatasetIntegrityError
 from job_market_intelligence.analysis.materialize import (
@@ -23,8 +24,6 @@ from job_market_intelligence.analysis.materialize import (
     materialize_development_dataset,
 )
 from job_market_intelligence.analysis.taxonomy import TAXONOMY_ARTIFACT_DEFAULT_PATH
-
-from conftest import BROWSE_ENDPOINT, BROWSE_SAMPLE_JSON
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 LIVE_MANIFEST = REPO_ROOT / DEFAULT_MANIFEST_PATH
@@ -192,4 +191,6 @@ class TestDefaults:
         assert manifest["total_count"] == 94520
         assert manifest["raw_sha256"] == LIVE_RAW_SHA256
         assert manifest["complete"] is False
-        assert manifest["raw_file_path"] == DEFAULT_MANIFEST_PATH.replace("manifests/", "raw/").replace(".manifest.json", ".json")
+        assert manifest["raw_file_path"] == DEFAULT_MANIFEST_PATH.replace("manifests/", "raw/").replace(
+            ".manifest.json", ".json"
+        )

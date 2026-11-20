@@ -129,9 +129,7 @@ def _ui_copy(at: AppTest) -> str:
 def _technical_region_lines(source: str) -> tuple[int, int]:
     """Líneas [inicio, fin) de la función «Detalles técnicos» del script."""
     lines = source.splitlines()
-    start = next(
-        i for i, line in enumerate(lines) if line.startswith("def _render_technical_details")
-    )
+    start = next(i for i, line in enumerate(lines) if line.startswith("def _render_technical_details"))
     end = next(
         (i for i in range(start + 1, len(lines)) if lines[i].startswith("def ")),
         len(lines),
@@ -149,13 +147,13 @@ class TestEstructuraPublica:
 
     def test_configuracion_de_streamlit_es_minima(self) -> None:
         config = STREAMLIT_CONFIG.read_text(encoding="utf-8")
-        assert '[client]' in config
+        assert "[client]" in config
         assert 'toolbarMode = "minimal"' in config
         assert 'showErrorDetails = "none"' in config
-        assert '[browser]' in config
-        assert 'gatherUsageStats = false' in config
-        assert '[server]' in config
-        assert 'headless = true' in config
+        assert "[browser]" in config
+        assert "gatherUsageStats = false" in config
+        assert "[server]" in config
+        assert "headless = true" in config
 
     def test_todas_las_pestanas_renderizan_contenido(self) -> None:
         at = _render()
@@ -304,9 +302,7 @@ class TestAuditoria:
     def test_dieciseis_falsos_positivos_y_siete_aprobaciones_como_expansores(self) -> None:
         at = _render()
         fp_expanders = [e for e in at.expander if e.label.endswith("(falso positivo)")]
-        approved_expanders = [
-            e for e in at.expander if e.label.endswith("(decisión humana aprobada)")
-        ]
+        approved_expanders = [e for e in at.expander if e.label.endswith("(decisión humana aprobada)")]
         assert len(fp_expanders) == 16
         assert len(approved_expanders) == 7
 

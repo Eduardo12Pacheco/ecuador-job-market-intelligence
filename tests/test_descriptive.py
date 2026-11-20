@@ -100,9 +100,7 @@ class TestSkillFrequency:
         # El informe de calidad también incluye conteos cero explícitos para las habilidades
         # sin coincidencias de la taxonomía, mientras que skill_frequency solo lista las que coinciden.
         embedded = dataset["quality_report"]["skill_coverage"]["skill_counts"]
-        assert analysis["skill_frequency"] == {
-            skill_id: count for skill_id, count in embedded.items() if count > 0
-        }
+        assert analysis["skill_frequency"] == {skill_id: count for skill_id, count in embedded.items() if count > 0}
 
     def test_deterministic_ordering(self, analysis) -> None:
         items = list(analysis["skill_frequency"].items())
@@ -172,10 +170,7 @@ class TestCooccurrence:
             seen.add((a, b))
 
     def test_known_pair_counts(self, analysis) -> None:
-        pairs = {
-            (p["skill_a"], p["skill_b"]): p["records"]
-            for p in analysis["cooccurrence_pairs"]["pairs"]
-        }
+        pairs = {(p["skill_a"], p["skill_b"]): p["records"] for p in analysis["cooccurrence_pairs"]["pairs"]}
         assert pairs[("skill.ai", "skill.machine_learning")] == 3
         assert pairs[("skill.ai", "skill.python")] == 2
         assert pairs[("skill.machine_learning", "skill.python")] == 2
@@ -185,9 +180,7 @@ class TestCooccurrence:
 
     def test_deterministic_pair_ordering(self, analysis) -> None:
         pairs = analysis["cooccurrence_pairs"]["pairs"]
-        assert pairs == sorted(
-            pairs, key=lambda p: (-p["records"], p["skill_a"], p["skill_b"])
-        )
+        assert pairs == sorted(pairs, key=lambda p: (-p["records"], p["skill_a"], p["skill_b"]))
         assert pairs[0] == {"skill_a": "skill.ai", "skill_b": "skill.machine_learning", "records": 3}
 
     def test_definition_documented(self, analysis) -> None:
@@ -211,7 +204,9 @@ class TestCooccurrence:
         i_ml = skill_ids.index("skill.machine_learning")
         assert matrix[i_ai][i_ml] == 3
         # La suma de la fila de skill.ai equivale a las ocurrencias totales de pares que involucran a ai.
-        assert sum(matrix[i_ai]) == sum(p["records"] for p in analysis["cooccurrence_pairs"]["pairs"] if "skill.ai" in (p["skill_a"], p["skill_b"]))
+        assert sum(matrix[i_ai]) == sum(
+            p["records"] for p in analysis["cooccurrence_pairs"]["pairs"] if "skill.ai" in (p["skill_a"], p["skill_b"])
+        )
 
     def test_matrix_matches_pairs(self, analysis) -> None:
         matrix_doc = analysis["cooccurrence_matrix"]
@@ -470,10 +465,7 @@ class TestTriangulate:
             {"skill_a": "skill.ai", "skill_b": "skill.not_in_taxonomy", "records": 1}
         ]
         # La lista de cero coincidencias solo incluye habilidades de la taxonomía; el id desconocido no aparece.
-        assert all(
-            s["skill_id"] != "skill.not_in_taxonomy"
-            for s in zero_match_skills(records, taxonomy)["skills"]
-        )
+        assert all(s["skill_id"] != "skill.not_in_taxonomy" for s in zero_match_skills(records, taxonomy)["skills"])
 
     def test_empty_records_produce_empty_aggregates(self, taxonomy) -> None:
         records: list[dict] = []

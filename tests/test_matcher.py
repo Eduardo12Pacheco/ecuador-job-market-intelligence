@@ -22,6 +22,8 @@ El matcher es un conjunto de reglas transparente, no una caja negra heurística:
 
 from __future__ import annotations
 
+from conftest import FIXED_CAPTURED_AT, default_job
+
 from job_market_intelligence.analysis.matcher import (
     MATCHER_VERSION,
     SEARCHED_FIELDS,
@@ -32,8 +34,6 @@ from job_market_intelligence.analysis.matcher import (
 )
 from job_market_intelligence.analysis.taxonomy import SkillDefinition, Taxonomy
 from job_market_intelligence.ingestion.parser import parse_job
-
-from conftest import FIXED_CAPTURED_AT, default_job
 
 SNAPSHOT = "snap-test"
 
@@ -82,9 +82,7 @@ def parsed_job(**overrides):
 PYTHON = skill("skill.python", "Python", ["python"])
 JAVA = skill("skill.java", "Java", ["java"])
 JAVASCRIPT = skill("skill.javascript", "JavaScript", ["javascript"])
-MACHINE_LEARNING = skill(
-    "skill.machine_learning", "Machine Learning", keywords=["machine learning"], aliases=["ml"]
-)
+MACHINE_LEARNING = skill("skill.machine_learning", "Machine Learning", keywords=["machine learning"], aliases=["ml"])
 CPP = skill("skill.cpp", "C++", keywords=["c++"], aliases=["cpp"])
 CSHARP = skill("skill.csharp", "C#", keywords=["c#"], aliases=["csharp"])
 GIT = skill("skill.git", "Git", ["git"])
@@ -107,17 +105,13 @@ class TestCaseAndVariants:
         assert result.skills == ("skill.python",)
 
     def test_alias_short_form_matches(self) -> None:
-        result = match_job(
-            parsed_job(description="<p>Strong ML fundamentals</p>"), make_taxonomy(MACHINE_LEARNING)
-        )
+        result = match_job(parsed_job(description="<p>Strong ML fundamentals</p>"), make_taxonomy(MACHINE_LEARNING))
         assert result.skills == ("skill.machine_learning",)
         assert result.evidence[0].matched_term == "ml"
         assert result.evidence[0].term_type == "alias"
 
     def test_keyword_term_type_reported(self) -> None:
-        result = match_job(
-            parsed_job(description="<p>machine learning systems</p>"), make_taxonomy(MACHINE_LEARNING)
-        )
+        result = match_job(parsed_job(description="<p>machine learning systems</p>"), make_taxonomy(MACHINE_LEARNING))
         assert result.evidence[0].matched_term == "machine learning"
         assert result.evidence[0].term_type == "keyword"
 
@@ -130,9 +124,7 @@ class TestCaseAndVariants:
 
 class TestBoundarySafety:
     def test_java_never_matches_inside_javascript(self) -> None:
-        result = match_job(
-            parsed_job(description="<p>JavaScript expert</p>"), make_taxonomy(JAVA, JAVASCRIPT)
-        )
+        result = match_job(parsed_job(description="<p>JavaScript expert</p>"), make_taxonomy(JAVA, JAVASCRIPT))
         assert result.skills == ("skill.javascript",)
 
     def test_ml_never_matches_inside_html_or_similar(self) -> None:
@@ -190,15 +182,11 @@ class TestPunctuationAndConnectors:
         assert result.skills == ("skill.csharp",)
 
     def test_hyphen_variant_matches_multiword_alias(self) -> None:
-        result = match_job(
-            parsed_job(description="<p>machine-learning workflows</p>"), make_taxonomy(MACHINE_LEARNING)
-        )
+        result = match_job(parsed_job(description="<p>machine-learning workflows</p>"), make_taxonomy(MACHINE_LEARNING))
         assert result.skills == ("skill.machine_learning",)
 
     def test_underscore_variant_matches_multiword_alias(self) -> None:
-        result = match_job(
-            parsed_job(description="<p>machine_learning pipelines</p>"), make_taxonomy(MACHINE_LEARNING)
-        )
+        result = match_job(parsed_job(description="<p>machine_learning pipelines</p>"), make_taxonomy(MACHINE_LEARNING))
         assert result.skills == ("skill.machine_learning",)
 
     def test_n8n_matches_literal_and_domain_form(self) -> None:
@@ -208,9 +196,7 @@ class TestPunctuationAndConnectors:
 
     def test_sso_long_alias_matches_hyphenated_text(self) -> None:
         sso = skill("skill.sso", "SSO", keywords=["sso"], aliases=["single sign on"])
-        result = match_job(
-            parsed_job(description="<p>SSO/SAML and single sign-on support</p>"), make_taxonomy(sso)
-        )
+        result = match_job(parsed_job(description="<p>SSO/SAML and single sign-on support</p>"), make_taxonomy(sso))
         assert result.skills == ("skill.sso",)
         assert [(e.matched_term, e.term_type) for e in result.evidence] == [
             ("sso", "keyword"),
@@ -219,9 +205,7 @@ class TestPunctuationAndConnectors:
 
     def test_rbac_long_alias_and_short_alias_dedupe_to_one_skill(self) -> None:
         rbac = skill("skill.rbac", "RBAC", keywords=["rbac"], aliases=["role based access control"])
-        result = match_job(
-            parsed_job(description="<p>role-based access control (RBAC)</p>"), make_taxonomy(rbac)
-        )
+        result = match_job(parsed_job(description="<p>role-based access control (RBAC)</p>"), make_taxonomy(rbac))
         assert result.skills == ("skill.rbac",)
         assert len(result.evidence) == 2
         # La iteración de términos sigue el orden de definición: primero keywords, luego aliases.
@@ -251,9 +235,7 @@ class TestHtmlHandling:
 
 class TestDeduplication:
     def test_duplicate_occurrences_collapse_with_count(self) -> None:
-        result = match_job(
-            parsed_job(description="<p>Python and more Python</p>"), make_taxonomy(PYTHON)
-        )
+        result = match_job(parsed_job(description="<p>Python and more Python</p>"), make_taxonomy(PYTHON))
         assert result.skills == ("skill.python",)
         assert len(result.evidence) == 1
         entry = result.evidence[0]

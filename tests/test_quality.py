@@ -13,6 +13,9 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 
+from conftest import default_job
+from test_dataset import CAPTURED_AT_ISO, UPDATED_AT_UTC_ISO, parsed_capture_at, sample_manifest
+
 from job_market_intelligence.analysis.matcher import SEARCHED_FIELDS, match_job
 from job_market_intelligence.analysis.quality import build_quality_report
 from job_market_intelligence.analysis.taxonomy import (
@@ -21,10 +24,6 @@ from job_market_intelligence.analysis.taxonomy import (
     Taxonomy,
 )
 from job_market_intelligence.ingestion.parser import parse_job
-
-from conftest import default_job
-
-from test_dataset import CAPTURED_AT_ISO, UPDATED_AT_UTC_ISO, parsed_capture_at, sample_manifest
 
 ARTIFACT_PATH = Path(__file__).resolve().parents[1] / TAXONOMY_ARTIFACT_DEFAULT_PATH
 
@@ -120,7 +119,10 @@ class TestSkillCoverage:
     def test_per_skill_counts_sorted_deterministically(self) -> None:
         jobs = [parsed_job(description="<p>Python and Java</p>")]
         report = report_for(jobs, manifest=sample_manifest(returned_jobs=1))
-        assert list(report["skill_coverage"]["skill_counts"]) == ["skill.java", "skill.python"]  # empates → orden por id
+        assert list(report["skill_coverage"]["skill_counts"]) == [
+            "skill.java",
+            "skill.python",
+        ]  # empates → orden por id
 
 
 class TestFreshness:

@@ -7,7 +7,7 @@ restricciones de zona horaria nunca son evidencia geográfica.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from job_market_intelligence.ingestion.models import LocationScope
 from job_market_intelligence.ingestion.parser import (
@@ -15,7 +15,7 @@ from job_market_intelligence.ingestion.parser import (
     parse_job,
 )
 
-CAPTURED_AT = datetime(2026, 8, 2, 17, 3, 28, tzinfo=timezone.utc)
+CAPTURED_AT = datetime(2026, 8, 2, 17, 3, 28, tzinfo=UTC)
 
 
 class TestClassifyLocationScope:

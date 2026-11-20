@@ -11,10 +11,11 @@ from __future__ import annotations
 import hashlib
 from collections import Counter
 from dataclasses import fields
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import httpx
 import pytest
+from conftest import FIXED_CAPTURED_AT, default_job, encode, make_adapter, make_page, transport_for
 
 from job_market_intelligence.ingestion.adapter import (
     DEFAULT_LIMIT,
@@ -33,8 +34,6 @@ from job_market_intelligence.ingestion.models import (
     ObservationStatus,
     RunStatus,
 )
-
-from conftest import FIXED_CAPTURED_AT, default_job, encode, make_adapter, make_page, transport_for
 
 TOTAL_45_PAGES = {
     0: make_page(0, 20, 45),
@@ -97,7 +96,9 @@ class TestPagination:
 
         def counting_handler(request: httpx.Request) -> httpx.Response:
             calls.append(request.url)
-            return httpx.Response(200, content=encode(make_page(0, 20, 20)), headers={"content-type": "application/json"})
+            return httpx.Response(
+                200, content=encode(make_page(0, 20, 20)), headers={"content-type": "application/json"}
+            )
 
         adapter = HimalayaAdapter(
             client=httpx.Client(transport=httpx.MockTransport(counting_handler)),
@@ -163,7 +164,7 @@ class TestRawEvidence:
         snapshot = adapter.collect_complete_feed()
 
         assert snapshot.api_updated_at_raw == 1785649720
-        assert snapshot.api_updated_at_utc == datetime(2026, 8, 2, 5, 48, 40, tzinfo=timezone.utc)
+        assert snapshot.api_updated_at_utc == datetime(2026, 8, 2, 5, 48, 40, tzinfo=UTC)
         names = {field.name for field in fields(CanonicalJob)}
         assert not any("updated_at" in name for name in names)
         client.close()
@@ -192,9 +193,7 @@ class TestBrowseFeed:
 
 class TestFailures:
     def test_non_2xx_response_fails(self) -> None:
-        client = httpx.Client(
-            transport=httpx.MockTransport(lambda request: httpx.Response(500, content=b"boom"))
-        )
+        client = httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(500, content=b"boom")))
         adapter = HimalayaAdapter(client=client, clock=lambda: FIXED_CAPTURED_AT)
         with pytest.raises(HimalayasHttpError) as exc_info:
             adapter.collect_complete_feed()

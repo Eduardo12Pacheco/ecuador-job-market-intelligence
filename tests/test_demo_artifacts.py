@@ -73,6 +73,7 @@ class TestRealArtifacts:
         assert len(A.load_review(A.REVIEW_PATH).labels) == 740
         assert A.load_report(A.REPORT_PATH).primary_metrics.get("tp") == 40
         assert len(A.load_taxonomy_info(A.TAXONOMY_PATH).skills) == 37
+
     def test_review_label_distribution(self, bundle: A.DemoBundle) -> None:
         assert bundle.review.label_counts() == {
             "supported": 40,
@@ -101,9 +102,7 @@ class TestRealArtifacts:
             assert bundle.dataset.record_by_source(label.source_id) is not None
             assert bundle.taxonomy.skill_by_id(label.skill_id) is not None
 
-    def test_every_supported_evidence_quote_verifies_against_the_record(
-        self, bundle: A.DemoBundle
-    ) -> None:
+    def test_every_supported_evidence_quote_verifies_against_the_record(self, bundle: A.DemoBundle) -> None:
         checked = 0
         for label in bundle.review.labels:
             record = bundle.dataset.record_by_source(label.source_id)
@@ -140,9 +139,7 @@ class TestFallbacks:
         assert record.evidence == ()
 
     def test_placeholder_company_raw_uses_the_slug(self) -> None:
-        record = JobRecord.from_dict(
-            {"source_id": "s1", "company_raw": "name", "company_slug_raw": "micro1"}
-        )
+        record = JobRecord.from_dict({"source_id": "s1", "company_raw": "name", "company_slug_raw": "micro1"})
         assert record.display_company == "Micro1"
 
     def test_prettify_slug(self) -> None:
@@ -183,9 +180,7 @@ class TestFallbacks:
         assert entry.matched_term == ""
 
     def test_non_list_skills_and_evidence_do_not_crash(self) -> None:
-        record = JobRecord.from_dict(
-            {"source_id": "s1", "skill_evidence": {"skills": None, "evidence": None}}
-        )
+        record = JobRecord.from_dict({"source_id": "s1", "skill_evidence": {"skills": None, "evidence": None}})
         assert record.skills == ()
         assert record.evidence == ()
 
@@ -202,9 +197,7 @@ class TestFallbacks:
         assert record.salary == "USD 60,000 - USD 90,000 per annual"
 
     def test_graceful_salary_with_only_max(self) -> None:
-        record = JobRecord.from_dict(
-            {"source_id": "s1", "salary_max_raw": 50000, "currency_raw": "USD"}
-        )
+        record = JobRecord.from_dict({"source_id": "s1", "salary_max_raw": 50000, "currency_raw": "USD"})
         assert record.salary == "up to USD 50,000"
 
 
@@ -212,8 +205,10 @@ class TestHumanReviewContract:
     def test_human_queue_is_closed_after_approval(self, bundle: A.DemoBundle) -> None:
         assert bundle.report.human_queue == ()
         assert len(bundle.report.human_review_decisions) == 7
-        assert all(item.get("final_label") in {"supported", "not_supported", "uncertain"}
-                   for item in bundle.report.human_review_decisions)
+        assert all(
+            item.get("final_label") in {"supported", "not_supported", "uncertain"}
+            for item in bundle.report.human_review_decisions
+        )
 
     def test_no_uncertain_final_labels_remain(self, bundle: A.DemoBundle) -> None:
         assert [label for label in bundle.review.labels if label.label == "uncertain"] == []
@@ -257,27 +252,19 @@ class TestPinnedStateValidation:
 
     @staticmethod
     def _with_dataset(bundle: A.DemoBundle, **changes) -> A.DemoBundle:
-        return dataclasses.replace(
-            bundle, dataset=dataclasses.replace(bundle.dataset, **changes)
-        )
+        return dataclasses.replace(bundle, dataset=dataclasses.replace(bundle.dataset, **changes))
 
     @staticmethod
     def _with_review(bundle: A.DemoBundle, **changes) -> A.DemoBundle:
-        return dataclasses.replace(
-            bundle, review=dataclasses.replace(bundle.review, **changes)
-        )
+        return dataclasses.replace(bundle, review=dataclasses.replace(bundle.review, **changes))
 
     @staticmethod
     def _with_report(bundle: A.DemoBundle, **changes) -> A.DemoBundle:
-        return dataclasses.replace(
-            bundle, report=dataclasses.replace(bundle.report, **changes)
-        )
+        return dataclasses.replace(bundle, report=dataclasses.replace(bundle.report, **changes))
 
     @staticmethod
     def _with_taxonomy(bundle: A.DemoBundle, **changes) -> A.DemoBundle:
-        return dataclasses.replace(
-            bundle, taxonomy=dataclasses.replace(bundle.taxonomy, **changes)
-        )
+        return dataclasses.replace(bundle, taxonomy=dataclasses.replace(bundle.taxonomy, **changes))
 
     def test_real_bundle_validates(self, bundle: A.DemoBundle) -> None:
         A.validate_bundle(bundle)
@@ -397,9 +384,8 @@ class TestLabelHandling:
 
     def test_unknown_label_value_degrades_gracefully_in_tolerant_loader(self) -> None:
         import json
-        from pathlib import Path
-
         import tempfile
+        from pathlib import Path
 
         doc = json.loads(A.REVIEW_PATH.read_text(encoding="utf-8"))
         doc["labels"][0]["label"] = "bogus"
@@ -411,9 +397,7 @@ class TestLabelHandling:
         assert review.labels[0].label == "bogus"
         assert review.labels[0].is_uncertain is False
 
-    def test_every_evidence_quote_verifies_against_the_record(
-        self, bundle: A.DemoBundle
-    ) -> None:
+    def test_every_evidence_quote_verifies_against_the_record(self, bundle: A.DemoBundle) -> None:
         checked = 0
         for label in bundle.review.labels:
             record = bundle.dataset.record_by_source(label.source_id)
@@ -455,9 +439,7 @@ class TestNetworkBoundary:
     def _network_call_hints(path: Path) -> list[str]:
         source = path.read_text(encoding="utf-8")
         hints = [
-            token
-            for token in ("urlopen", "requests.", "httpx.", "urllib.", "socket.", "aiohttp")
-            if token in source
+            token for token in ("urlopen", "requests.", "httpx.", "urllib.", "socket.", "aiohttp") if token in source
         ]
         return hints
 

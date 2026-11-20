@@ -12,10 +12,16 @@ import dataclasses
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from conftest import (
+    BROWSE_ENDPOINT,
+    BROWSE_FIXTURE_SHA256,
+    BROWSE_METADATA_JSON,
+    FIXED_CAPTURED_AT,
+)
 
 from job_market_intelligence.ingestion.models import RawPage, RunStatus, TimestampUnit
 from job_market_intelligence.ingestion.storage import (
@@ -26,14 +32,7 @@ from job_market_intelligence.ingestion.storage import (
     StorageError,
 )
 
-from conftest import (
-    BROWSE_ENDPOINT,
-    BROWSE_FIXTURE_SHA256,
-    BROWSE_METADATA_JSON,
-    FIXED_CAPTURED_AT,
-)
-
-UTC = timezone.utc
+UTC = UTC
 
 # Contrato de ruta determinista: componente de endpoint legible + hash de endpoint
 # estable + offset rellenado con ceros. El hash es sha256(endpoint)[:12].
@@ -170,9 +169,7 @@ class TestRawPersistence:
         )
 
         assert first.raw_file_path_relative == EXPECTED_RAW_RELATIVE
-        assert second.raw_file_path_relative == (
-            f"data/raw/himalayas/jobs_api_{BROWSE_ENDPOINT_HASH}/00000020.json"
-        )
+        assert second.raw_file_path_relative == (f"data/raw/himalayas/jobs_api_{BROWSE_ENDPOINT_HASH}/00000020.json")
         assert first.raw_file_path != second.raw_file_path
         assert first.manifest_path != second.manifest_path
         assert second.raw_file_path.exists()
@@ -257,9 +254,7 @@ class TestManifestContent:
         assert manifest["updated_at_utc"] == "2026-08-02T05:48:40+00:00"
         assert manifest["timestamp_unit"] == "unix_seconds"
 
-    def test_http_status_and_content_type_preserved_exactly(
-        self, monkeypatch, tmp_path, browse_fixture_bytes
-    ) -> None:
+    def test_http_status_and_content_type_preserved_exactly(self, monkeypatch, tmp_path, browse_fixture_bytes) -> None:
         monkeypatch.chdir(tmp_path)
         page = make_page(
             browse_fixture_bytes,
