@@ -30,8 +30,9 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any
 from xml.sax.saxutils import escape as xml_escape
 
 from .errors import DatasetError
@@ -120,14 +121,13 @@ def _bar_chart_svg(
     bar_w = min(34, slot * 0.62)
     rotate = n > 12
 
-    elements = [f'<title>{xml_escape(title)}</title>']
+    elements = [f"<title>{xml_escape(title)}</title>"]
     elements.append(
         f'<text x="20" y="24" font-family="sans-serif" font-size="16" font-weight="bold" '
         f'fill="#111827">{xml_escape(title)}</text>'
     )
     elements.append(
-        f'<text x="20" y="42" font-family="sans-serif" font-size="11" fill="#4b5563">'
-        f'{xml_escape(subtitle)}</text>'
+        f'<text x="20" y="42" font-family="sans-serif" font-size="11" fill="#4b5563">{xml_escape(subtitle)}</text>'
     )
 
     # Líneas de cuadrícula y etiquetas del eje Y.
@@ -153,7 +153,7 @@ def _bar_chart_svg(
         elements.append(
             f'<rect x="{x_center - bar_w / 2:.1f}" y="{y_bar:.1f}" width="{bar_w:.1f}" '
             f'height="{bar_h:.1f}" fill="#2563eb" stroke="#1d4ed8" stroke-width="0.5">'
-            f'<title>{xml_escape(label)}: {value} {y_axis_label}</title></rect>'
+            f"<title>{xml_escape(label)}: {value} {y_axis_label}</title></rect>"
         )
         elements.append(
             f'<text x="{x_center:.1f}" y="{y_bar - 5:.1f}" font-family="sans-serif" '
@@ -179,18 +179,14 @@ def _bar_chart_svg(
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{_BAR_WIDTH}" height="{_BAR_HEIGHT}" '
         f'viewBox="0 0 {_BAR_WIDTH} {_BAR_HEIGHT}">'
         f'<rect width="{_BAR_WIDTH}" height="{_BAR_HEIGHT}" fill="#ffffff"/>'
-        f'{body}</svg>\n'
+        f"{body}</svg>\n"
     )
     return svg.encode("utf-8")
 
 
 def svg_skill_frequency(analysis: Mapping[str, Any]) -> bytes:
     """Gráfico de barras de cada habilidad coincidente, ordenado por recuento de registros (desc) y luego por id."""
-    items = [
-        (skill_id, count)
-        for skill_id, count in analysis["skill_frequency"].items()
-        if count > 0
-    ]
+    items = [(skill_id, count) for skill_id, count in analysis["skill_frequency"].items() if count > 0]
     items.sort(key=lambda item: (-item[1], item[0]))
     chart_items = [(_short_id(skill_id), count) for skill_id, count in items]
     return _bar_chart_svg(
@@ -208,10 +204,7 @@ def svg_skill_frequency(analysis: Mapping[str, Any]) -> bytes:
 def svg_category_coverage(analysis: Mapping[str, Any]) -> bytes:
     """Gráfico de barras de registros distintos por categoría (definición en el artefacto)."""
     categories = analysis["category_coverage"]["categories"]
-    chart_items = [
-        (entry["category"], entry["records"])
-        for entry in categories
-    ]
+    chart_items = [(entry["category"], entry["records"]) for entry in categories]
     return _bar_chart_svg(
         title="Category coverage — development sample",
         subtitle=(
@@ -248,15 +241,15 @@ def svg_cooccurrence_matrix(analysis: Mapping[str, Any]) -> bytes:
     width = left + grid + 16 + 14 + 46
     height = top + grid + 40 + 5 * _FOOTER_STEP + 12
 
-    elements = [f'<title>Cooccurrence matrix — development sample</title>']
+    elements = ["<title>Cooccurrence matrix — development sample</title>"]
     elements.append(
-        f'<text x="20" y="24" font-family="sans-serif" font-size="16" font-weight="bold" '
-        f'fill="#111827">Cooccurrence matrix — development sample</text>'
+        '<text x="20" y="24" font-family="sans-serif" font-size="16" font-weight="bold" '
+        'fill="#111827">Cooccurrence matrix — development sample</text>'
     )
     elements.append(
         f'<text x="20" y="42" font-family="sans-serif" font-size="11" fill="#4b5563">'
-        f'symmetric matrix over all {n} taxonomy skills (sorted ids); each cell counts '
-        f'distinct records containing both skills; diagonal = 0 (no self-pairs)</text>'
+        f"symmetric matrix over all {n} taxonomy skills (sorted ids); each cell counts "
+        f"distinct records containing both skills; diagonal = 0 (no self-pairs)</text>"
     )
 
     # Etiquetas de fila (izquierda) y de columna (arriba, rotadas -90).
@@ -282,8 +275,8 @@ def svg_cooccurrence_matrix(analysis: Mapping[str, Any]) -> bytes:
             elements.append(
                 f'<rect x="{x}" y="{y}" width="{cell}" height="{cell}" '
                 f'fill="{_heat_color(count, max_count)}">'
-                f'<title>{xml_escape(_short_id(skill_ids[i]))} x '
-                f'{xml_escape(_short_id(skill_ids[j]))}: {count} records</title></rect>'
+                f"<title>{xml_escape(_short_id(skill_ids[i]))} x "
+                f"{xml_escape(_short_id(skill_ids[j]))}: {count} records</title></rect>"
             )
 
     # Leyenda.
@@ -291,27 +284,30 @@ def svg_cooccurrence_matrix(analysis: Mapping[str, Any]) -> bytes:
     legend_y = top + 60
     legend_h = 200
     elements.append(
-        f'<defs><linearGradient id="heat-gradient" x1="0" y1="0" x2="0" y2="1">'
-        f'<stop offset="0%" stop-color="#1e3a8a"/><stop offset="100%" stop-color="#dbeafe"/>'
-        f'</linearGradient></defs>'
+        '<defs><linearGradient id="heat-gradient" x1="0" y1="0" x2="0" y2="1">'
+        '<stop offset="0%" stop-color="#1e3a8a"/><stop offset="100%" stop-color="#dbeafe"/>'
+        "</linearGradient></defs>"
     )
     elements.append(
         f'<rect x="{legend_x}" y="{legend_y}" width="14" height="{legend_h}" '
         f'fill="url(#heat-gradient)" stroke="#9ca3af" stroke-width="0.5"/>'
     )
-    for label, fy in (("0", legend_y + legend_h), (str(max_count // 2), legend_y + legend_h // 2), (str(max_count), legend_y)):
+    for label, fy in (
+        ("0", legend_y + legend_h),
+        (str(max_count // 2), legend_y + legend_h // 2),
+        (str(max_count), legend_y),
+    ):
         elements.append(
             f'<text x="{legend_x + 20}" y="{fy + 3}" font-family="sans-serif" '
             f'font-size="9" fill="#374151">{label}</text>'
         )
     elements.append(
-        f'<text x="{legend_x}" y="{legend_y - 8}" font-family="sans-serif" font-size="9" '
-        f'fill="#4b5563">records</text>'
+        f'<text x="{legend_x}" y="{legend_y - 8}" font-family="sans-serif" font-size="9" fill="#4b5563">records</text>'
     )
     elements.append(
         f'<text x="20" y="{top + grid + 24}" font-family="sans-serif" font-size="9.5" '
         f'fill="#4b5563">matrix cell [i][j] = number of distinct records containing both '
-        f'skills; values match the cooccurrence-pairs artifact exactly.</text>'
+        f"skills; values match the cooccurrence-pairs artifact exactly.</text>"
     )
 
     footer_y = top + grid + 40
@@ -328,7 +324,7 @@ def svg_cooccurrence_matrix(analysis: Mapping[str, Any]) -> bytes:
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}">'
         f'<rect width="{width}" height="{height}" fill="#ffffff"/>'
-        f'{body}</svg>\n'
+        f"{body}</svg>\n"
     )
     return svg.encode("utf-8")
 
@@ -362,9 +358,7 @@ def zero_match_markdown(analysis: Mapping[str, Any]) -> bytes:
         "|---|---|---|---|",
     ]
     for skill in zero["skills"]:
-        lines.append(
-            f"| {skill['skill_id']} | {skill['name']} | {skill['category']} | {skill['matched_records']} |"
-        )
+        lines.append(f"| {skill['skill_id']} | {skill['name']} | {skill['category']} | {skill['matched_records']} |")
     lines += [
         "",
         f"Summary: {zero['count']} of the {len(analysis['cooccurrence_matrix']['skill_ids'])} "
@@ -400,9 +394,7 @@ def _write_artifact(path: Path, data: bytes) -> None:
         raise
 
 
-def build_visualizations(
-    analysis: Mapping[str, Any], out_dir: str | Path
-) -> list[Path]:
+def build_visualizations(analysis: Mapping[str, Any], out_dir: str | Path) -> list[Path]:
     """Escribe todos los artefactos de visualización de referencia; devuelve sus rutas ordenadas.
 
     Determinista y con cierre ante fallo: un artefacto existente con contenido

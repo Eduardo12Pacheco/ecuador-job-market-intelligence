@@ -44,7 +44,8 @@ representatividad.
 from __future__ import annotations
 
 import json
-from typing import Any, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any
 
 from .dataset import DATASET_KIND
 from .errors import DescriptiveError
@@ -73,8 +74,7 @@ GUARDRAILS = (
     "not correlation: cooccurrence counts how often two skills appear in the same "
     "records; it does not measure any relationship, association, or dependency between "
     "skills",
-    "not causality: no metric here claims that one skill causes, predicts, or is "
-    "required by another",
+    "not causality: no metric here claims that one skill causes, predicts, or is required by another",
     "not market coverage: the analysis covers exactly 20 records from one page "
     "(limit=20, offset=0) of one source (Himalayas), marked complete: false; it is not "
     "a market snapshot and no whole-market claim is made",
@@ -161,8 +161,7 @@ def validate_development_sample(dataset: Mapping[str, Any], taxonomy: Taxonomy) 
     ):
         if actual != expected:
             raise DescriptiveError(
-                f"sample.{label} debe ser {expected} para la muestra de desarrollo "
-                f"documentada; se obtuvo {actual!r}"
+                f"sample.{label} debe ser {expected} para la muestra de desarrollo documentada; se obtuvo {actual!r}"
             )
     if len(records) != SAMPLE_RECORDS:
         raise DescriptiveError(
@@ -171,8 +170,7 @@ def validate_development_sample(dataset: Mapping[str, Any], taxonomy: Taxonomy) 
         )
     if sample.get("complete") is not False:
         raise DescriptiveError(
-            "sample.complete debe ser false para la muestra de desarrollo; se rechaza "
-            "analizar una muestra 'complete'"
+            "sample.complete debe ser false para la muestra de desarrollo; se rechaza analizar una muestra 'complete'"
         )
     identity = dataset.get("capture_identity")
     if not isinstance(identity, dict) or identity.get("snapshot_id") != SNAPSHOT_ID:
@@ -191,9 +189,7 @@ def skill_frequency(records: Sequence[Mapping[str, Any]]) -> dict[str, int]:
     return dict(sorted(counts.items(), key=lambda item: (-item[1], item[0])))
 
 
-def category_coverage(
-    records: Sequence[Mapping[str, Any]], taxonomy: Taxonomy
-) -> dict[str, Any]:
+def category_coverage(records: Sequence[Mapping[str, Any]], taxonomy: Taxonomy) -> dict[str, Any]:
     """Cobertura por registro distinto por categoría, con la definición incluida."""
     category_by_skill = {skill.skill_id: skill.category for skill in taxonomy.skills}
     records_per_category: dict[str, set[int]] = {}
@@ -206,8 +202,7 @@ def category_coverage(
             if skill_id in category_by_skill:
                 matched_per_category.setdefault(category_by_skill[skill_id], set()).add(skill_id)
     total = {
-        category: sum(1 for skill in taxonomy.skills if skill.category == category)
-        for category in taxonomy.categories
+        category: sum(1 for skill in taxonomy.skills if skill.category == category) for category in taxonomy.categories
     }
     categories = [
         {
@@ -226,9 +221,7 @@ def category_coverage(
     }
 
 
-def zero_match_skills(
-    records: Sequence[Mapping[str, Any]], taxonomy: Taxonomy
-) -> dict[str, Any]:
+def zero_match_skills(records: Sequence[Mapping[str, Any]], taxonomy: Taxonomy) -> dict[str, Any]:
     """Habilidades de la taxonomía con cero registros coincidentes, con la distinción no_evidence."""
     matched = set(skill_frequency(records))
     skills = [
@@ -258,10 +251,7 @@ def cooccurrence_pairs(records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             for j in range(i + 1, len(ordered)):
                 pair = (ordered[i], ordered[j])
                 counts[pair] = counts.get(pair, 0) + 1
-    pairs = [
-        {"skill_a": skill_a, "skill_b": skill_b, "records": count}
-        for (skill_a, skill_b), count in counts.items()
-    ]
+    pairs = [{"skill_a": skill_a, "skill_b": skill_b, "records": count} for (skill_a, skill_b), count in counts.items()]
     pairs.sort(key=lambda pair: (-pair["records"], pair["skill_a"], pair["skill_b"]))
     return {
         "definition": _DEFINITIONS["cooccurrence_pairs"],
@@ -270,9 +260,7 @@ def cooccurrence_pairs(records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     }
 
 
-def cooccurrence_matrix(
-    records: Sequence[Mapping[str, Any]], taxonomy: Taxonomy
-) -> dict[str, Any]:
+def cooccurrence_matrix(records: Sequence[Mapping[str, Any]], taxonomy: Taxonomy) -> dict[str, Any]:
     """Matriz de coocurrencia simétrica sobre los ids de habilidad de la taxonomía ordenados (diagonal cero)."""
     skill_ids = sorted(skill.skill_id for skill in taxonomy.skills)
     index = {skill_id: i for i, skill_id in enumerate(skill_ids)}
@@ -305,24 +293,18 @@ def quality_freshness_summary(dataset: Mapping[str, Any]) -> dict[str, Any]:
         "record_count": report.get("record_count"),
         "checked_fields": list(report.get("checked_fields", [])),
         "missing_field_counts": dict(report.get("missing_field_counts", {})),
-        "duplicate_source_id_records": (report.get("duplicate_counts") or {}).get(
-            "duplicate_source_id_records"
-        ),
+        "duplicate_source_id_records": (report.get("duplicate_counts") or {}).get("duplicate_source_id_records"),
         "observation_status_counts": dict(report.get("observation_status_counts", {})),
         "records_with_evidence": coverage.get("records_with_evidence"),
         "records_without_evidence": coverage.get("records_without_evidence"),
         "no_evidence_record_ids": list(coverage.get("records_no_evidence", [])),
-        "age_at_capture_seconds": (report.get("freshness") or {}).get(
-            "age_at_capture_seconds"
-        ),
+        "age_at_capture_seconds": (report.get("freshness") or {}).get("age_at_capture_seconds"),
         "freshness_formula": (report.get("freshness") or {}).get("formula"),
         "limitations_note": report.get("limitations_note"),
     }
 
 
-def build_descriptive_analysis(
-    dataset: Mapping[str, Any], taxonomy: Taxonomy
-) -> dict[str, Any]:
+def build_descriptive_analysis(dataset: Mapping[str, Any], taxonomy: Taxonomy) -> dict[str, Any]:
     """Construye el artefacto de análisis descriptivo determinista para la muestra.
 
     Valida el contrato documentado de la muestra de desarrollo, calcula las métricas
@@ -338,9 +320,7 @@ def build_descriptive_analysis(
     report = dataset.get("quality_report") or {}
     embedded_counts = (report.get("skill_coverage") or {}).get("skill_counts") or {}
     # Alinear ambos lados sobre el conjunto completo de habilidades de la taxonomía (conteos cero incluidos).
-    expected = {
-        skill.skill_id: embedded_counts.get(skill.skill_id, 0) for skill in taxonomy.skills
-    }
+    expected = {skill.skill_id: embedded_counts.get(skill.skill_id, 0) for skill in taxonomy.skills}
     actual = {skill.skill_id: frequencies.get(skill.skill_id, 0) for skill in taxonomy.skills}
     if actual != expected:
         raise DescriptiveError(
@@ -405,6 +385,4 @@ def build_descriptive_analysis(
 
 def serialize_analysis(analysis: Mapping[str, Any]) -> bytes:
     """Serialización JSON determinista en UTF-8 (claves ordenadas, sangría de 2 espacios, salto de línea)."""
-    return (
-        json.dumps(analysis, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
-    ).encode("utf-8")
+    return (json.dumps(analysis, ensure_ascii=True, indent=2, sort_keys=True) + "\n").encode("utf-8")

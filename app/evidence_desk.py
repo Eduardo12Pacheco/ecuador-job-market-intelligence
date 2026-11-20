@@ -344,8 +344,18 @@ def markdown_html(html: str) -> None:
 # ---------------------------------------------------------------------------
 
 _MESES_ES = (
-    "enero", "febrero", "marzo", "abril", "mayo", "junio",
-    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre",
 )
 
 
@@ -384,7 +394,7 @@ _DATO_ES = {
 
 def _es(value: str) -> str:
     if value.startswith("Restricted to: "):
-        return "Restringido a: " + value[len("Restricted to: "):]
+        return "Restringido a: " + value[len("Restricted to: ") :]
     return _DATO_ES.get(value, _FALLBACK_ES.get(value, value))
 
 
@@ -407,31 +417,23 @@ def _categoria_es(value: str) -> str:
 def _salary_es(value: str) -> str:
     text = value
     if text.startswith("up to "):
-        text = "hasta " + text[len("up to "):]
+        text = "hasta " + text[len("up to ") :]
     text = text.replace(" per annual", " por año").replace(" per month", " por mes")
     return _es(text)
 
 
 _PREGUNTAS_REVISION_ES = {
-    "Decide whether company/product-level AI context ('not AI-native', 'proactive smart assistant', 'multi-step reasoning') counts as evidence of the AI skill for a non-technical strategy and operations role.":
-        "Decide si el contexto de IA de la empresa o del producto («not AI-native», «proactive smart assistant», «multi-step reasoning») cuenta como evidencia de la habilidad de IA para un puesto no técnico de estrategia y operaciones.",
-    "question_degree_field":
-        "Decide si mencionar un campo de estudio entre las calificaciones deseables cuenta como evidencia explícita de la habilidad de ciencia de datos o no.",
-    "question_machine_learning_context":
-        "Decide si la mención contextual de aprendizaje automático («datasets for advanced machine learning applications») cuenta como evidencia explícita de esa habilidad o no.",
-    "Decide whether the nice-to-have AI-adjacent qualification ('AI data collection ... is a plus') outweighs the explicit negative requirement ('No prior experience in AI is required').":
-        "Decide si la calificación deseable relacionada con IA («AI data collection ... is a plus») pesa más que el requisito negativo explícito («No prior experience in AI is required»).",
-    "question_category_context":
-        "Decide si la mención contextual de la categoría («Brazilian-Portuguese-AI-Specialist») y la frase «audio samples for AI training» cuentan como evidencia de IA pese al requisito negativo explícito.",
+    "Decide whether company/product-level AI context ('not AI-native', 'proactive smart assistant', 'multi-step reasoning') counts as evidence of the AI skill for a non-technical strategy and operations role.": "Decide si el contexto de IA de la empresa o del producto («not AI-native», «proactive smart assistant», «multi-step reasoning») cuenta como evidencia de la habilidad de IA para un puesto no técnico de estrategia y operaciones.",
+    "question_degree_field": "Decide si mencionar un campo de estudio entre las calificaciones deseables cuenta como evidencia explícita de la habilidad de ciencia de datos o no.",
+    "question_machine_learning_context": "Decide si la mención contextual de aprendizaje automático («datasets for advanced machine learning applications») cuenta como evidencia explícita de esa habilidad o no.",
+    "Decide whether the nice-to-have AI-adjacent qualification ('AI data collection ... is a plus') outweighs the explicit negative requirement ('No prior experience in AI is required').": "Decide si la calificación deseable relacionada con IA («AI data collection ... is a plus») pesa más que el requisito negativo explícito («No prior experience in AI is required»).",
+    "question_category_context": "Decide si la mención contextual de la categoría («Brazilian-Portuguese-AI-Specialist») y la frase «audio samples for AI training» cuentan como evidencia de IA pese al requisito negativo explícito.",
 }
 
 _NOTAS_REVISION_ES = {
-    "note_uncertain_to_negative":
-        "Primera pasada: incierto; segunda pasada: no respaldado. Desacuerdo real entre ambas pasadas.",
-    "note_negative_to_uncertain":
-        "Primera pasada: no respaldado; segunda pasada: incierto. Desacuerdo real entre ambas pasadas.",
-    "note_ai_ml_confusion":
-        "Primera pasada: incierto; segunda pasada: no respaldado. Confusión entre el vocabulario de IA y el de aprendizaje automático.",
+    "note_uncertain_to_negative": "Primera pasada: incierto; segunda pasada: no respaldado. Desacuerdo real entre ambas pasadas.",
+    "note_negative_to_uncertain": "Primera pasada: no respaldado; segunda pasada: incierto. Desacuerdo real entre ambas pasadas.",
+    "note_ai_ml_confusion": "Primera pasada: incierto; segunda pasada: no respaldado. Confusión entre el vocabulario de IA y el de aprendizaje automático.",
 }
 
 
@@ -456,7 +458,7 @@ def _motivo_revision_es(value: object) -> str:
     if not text:
         return ""
     if text.startswith("No explicit mention of "):
-        skill = text[len("No explicit mention of "):].split(" in the reviewed fields", 1)[0]
+        skill = text[len("No explicit mention of ") :].split(" in the reviewed fields", 1)[0]
         return (
             f"No hay una mención explícita de {skill} en los campos revisados; "
             "«no respaldado» significa que no se encontró evidencia positiva explícita, "
@@ -572,9 +574,7 @@ _CRITERIOS_FINALES_ES = {
 }
 
 #: Fuente de aprobación en español (el valor crudo vive solo en «Detalles técnicos»).
-_APROBACION_FUENTE_ES = (
-    "instrucción explícita de la persona responsable del proyecto"
-)
+_APROBACION_FUENTE_ES = "instrucción explícita de la persona responsable del proyecto"
 
 
 def _decision_for(bundle: A.DemoBundle, source_id: str, skill_id: str) -> dict | None:
@@ -615,8 +615,11 @@ def _bars(data: object, x: str, y: str, x_title: str, y_title: str, height: int 
                 title=x_title,
                 sort="-y",
                 axis=alt.Axis(
-                    labelAngle=-40, labelFontSize=10, labelColor="#3E444B",
-                    titleFontSize=12, titleColor="#1C1E21",
+                    labelAngle=-40,
+                    labelFontSize=10,
+                    labelColor="#3E444B",
+                    titleFontSize=12,
+                    titleColor="#1C1E21",
                 ),
             ),
             y=alt.Y(
@@ -624,8 +627,12 @@ def _bars(data: object, x: str, y: str, x_title: str, y_title: str, height: int 
                 type="quantitative",
                 title=y_title,
                 axis=alt.Axis(
-                    grid=True, gridColor="#E4E1D9", labelFontSize=11,
-                    labelColor="#3E444B", titleFontSize=12, titleColor="#1C1E21",
+                    grid=True,
+                    gridColor="#E4E1D9",
+                    labelFontSize=11,
+                    labelColor="#3E444B",
+                    titleFontSize=12,
+                    titleColor="#1C1E21",
                 ),
             ),
         )
@@ -649,8 +656,8 @@ def render_masthead(bundle: A.DemoBundle) -> None:
         '<div class="masthead">'
         '<div class="masthead-row">'
         '<span class="desk-label">Mesa de evidencia</span>'
-        f'{chip("Revisión humana completa", "validate")}'
-        f'{chip("Evaluación final · muestra curada", "supported")}'
+        f"{chip('Revisión humana completa', 'validate')}"
+        f"{chip('Evaluación final · muestra curada', 'supported')}"
         "</div>"
         "<h1>Inteligencia del mercado laboral ecuatoriano</h1>"
         '<p class="purpose">Una herramienta local que extrae habilidades técnicas de '
@@ -741,8 +748,8 @@ def render_strip(bundle: A.DemoBundle) -> None:
         '<div class="strip-label">Pares revisados</div>'
         f'<div class="strip-note">{bundle.dataset.record_count} × '
         f"{len(bundle.taxonomy.skills)} · revisión humana completa · "
-        f'{label_counts.get("supported", 0)} respaldados · '
-        f'{label_counts.get("uncertain", 0)} inciertos</div></div>'
+        f"{label_counts.get('supported', 0)} respaldados · "
+        f"{label_counts.get('uncertain', 0)} inciertos</div></div>"
         f'<div class="strip-cell"><div class="strip-num">{decisions}</div>'
         '<div class="strip-label">Decisiones humanas resueltas</div>'
         '<div class="strip-note">7 decisiones humanas resueltas · 7 de 7 aprobadas · ninguna pendiente</div></div>'
@@ -755,9 +762,7 @@ def render_strip(bundle: A.DemoBundle) -> None:
 
 
 def render_sidebar(bundle: A.DemoBundle) -> None:
-    st.sidebar.markdown(
-        chip("Revisión humana completa", "supported"), unsafe_allow_html=True
-    )
+    st.sidebar.markdown(chip("Revisión humana completa", "supported"), unsafe_allow_html=True)
     st.sidebar.markdown(
         '<div class="side-fact">Fuente de los datos: '
         '<a href="https://himalayas.app" target="_blank" rel="noopener">himalayas.app</a>'
@@ -783,8 +788,6 @@ def render_error(exc: A.DemoDataError) -> None:
         f"**Qué ocurrió:** {esc(exc)}\n\n"
         "La mesa necesita sus insumos locales preparados por el proceso offline. Comprueba "
         "la instalación y vuelve a materializar los datos antes de abrir la interfaz."
-
-
     )
 
 
@@ -808,33 +811,52 @@ def tab_resumen(bundle: A.DemoBundle) -> None:
     )
     tp = m.get("tp", 0)
     rows = [
-        (tp, "Verdaderos positivos",
-         "Pares en los que el buscador detectó la habilidad y la revisión final "
-         "está de acuerdo."),
-        (m.get("fp", 0), "Falsos positivos",
-         "Pares en los que el buscador detectó la habilidad, pero la revisión "
-         "final no la respalda."),
-        (m.get("fn", 0), "Falsos negativos",
-         "Pares que la revisión final respalda y que el buscador habría omitido. Hoy no hay "
-         "ninguno."),
-        (m.get("tn", 0), "Verdaderos negativos",
-         "Pares en los que el buscador y la revisión coinciden: no hay evidencia de "
-         "la habilidad."),
-        (label_counts.get("uncertain", 0), "Inciertos",
-         "Pares que la revisión no pudo decidir. Hoy no hay ninguno: las 7 decisiones "
-         "humanas fueron resueltas."),
-        (A.format_metric_es(m.get("precision")), "Precisión final · muestra curada",
-         f"De cada 100 coincidencias que propone el buscador, la revisión final "
-         f"respalda aproximadamente {round(m.get('precision', 0) * 100)} — dentro de "
-         "esta muestra curada de 20 ofertas. Es la proporción de coincidencias "
-         "propuestas que la revisión apoya."),
-        (A.format_metric_es(m.get("recall")), "Recall final · muestra curada",
-         f"De los {tp} pares que la revisión final respalda, el buscador "
-         f"detectó los {tp}. Esta cifra vale solo para esta muestra curada: no "
-         "dice nada sobre lo que hay fuera de ella."),
-        (A.format_metric_es(m.get("f1")), "F1 final · muestra curada",
-         "Un solo número que equilibra la precisión y el recall; cuanto más cerca de "
-         "1, mejor equilibradas están ambas. Describe solo esta muestra curada."),
+        (
+            tp,
+            "Verdaderos positivos",
+            "Pares en los que el buscador detectó la habilidad y la revisión final está de acuerdo.",
+        ),
+        (
+            m.get("fp", 0),
+            "Falsos positivos",
+            "Pares en los que el buscador detectó la habilidad, pero la revisión final no la respalda.",
+        ),
+        (
+            m.get("fn", 0),
+            "Falsos negativos",
+            "Pares que la revisión final respalda y que el buscador habría omitido. Hoy no hay ninguno.",
+        ),
+        (
+            m.get("tn", 0),
+            "Verdaderos negativos",
+            "Pares en los que el buscador y la revisión coinciden: no hay evidencia de la habilidad.",
+        ),
+        (
+            label_counts.get("uncertain", 0),
+            "Inciertos",
+            "Pares que la revisión no pudo decidir. Hoy no hay ninguno: las 7 decisiones humanas fueron resueltas.",
+        ),
+        (
+            A.format_metric_es(m.get("precision")),
+            "Precisión final · muestra curada",
+            f"De cada 100 coincidencias que propone el buscador, la revisión final "
+            f"respalda aproximadamente {round(m.get('precision', 0) * 100)} — dentro de "
+            "esta muestra curada de 20 ofertas. Es la proporción de coincidencias "
+            "propuestas que la revisión apoya.",
+        ),
+        (
+            A.format_metric_es(m.get("recall")),
+            "Recall final · muestra curada",
+            f"De los {tp} pares que la revisión final respalda, el buscador "
+            f"detectó los {tp}. Esta cifra vale solo para esta muestra curada: no "
+            "dice nada sobre lo que hay fuera de ella.",
+        ),
+        (
+            A.format_metric_es(m.get("f1")),
+            "F1 final · muestra curada",
+            "Un solo número que equilibra la precisión y el recall; cuanto más cerca de "
+            "1, mejor equilibradas están ambas. Describe solo esta muestra curada.",
+        ),
     ]
     cells = "".join(
         f'<div class="m-row"><div class="m-num">{esc(str(num))}</div>'
@@ -898,19 +920,13 @@ def tab_landscape(bundle: A.DemoBundle) -> None:
         "gráficas son evidencia de palabras clave, nunca una afirmación de mercado."
     )
     freq = A.skill_frequency(bundle.descriptive)
-    show_zero = st.toggle(
-        "Incluir las habilidades sin coincidencias", value=False, key="zm_toggle"
-    )
-    rows = [
-        {"habilidad": taxonomy.skill_name(skill_id), "ofertas": count}
-        for skill_id, count in freq.items()
-    ]
+    show_zero = st.toggle("Incluir las habilidades sin coincidencias", value=False, key="zm_toggle")
+    rows = [{"habilidad": taxonomy.skill_name(skill_id), "ofertas": count} for skill_id, count in freq.items()]
     if show_zero:
         for entry in A.zero_match_skills(bundle.descriptive):
             rows.append(
                 {
-                    "habilidad": entry.get("name")
-                    or taxonomy.skill_name(entry.get("skill_id", "")),
+                    "habilidad": entry.get("name") or taxonomy.skill_name(entry.get("skill_id", "")),
                     "ofertas": 0,
                 }
             )
@@ -937,8 +953,7 @@ def tab_landscape(bundle: A.DemoBundle) -> None:
         st.table(
             [
                 {
-                    "Habilidad": entry.get("name")
-                    or taxonomy.skill_name(entry.get("skill_id", "")),
+                    "Habilidad": entry.get("name") or taxonomy.skill_name(entry.get("skill_id", "")),
                     "Categoría": _categoria_es(taxonomy.category_label(entry.get("category", ""))),
                     "Ofertas con coincidencia": 0,
                 }
@@ -955,7 +970,10 @@ def tab_landscape(bundle: A.DemoBundle) -> None:
         )
         _bars(
             [
-                {"categoria": _categoria_es(taxonomy.category_label(c.get("category", ""))), "ofertas": c.get("records", 0)}
+                {
+                    "categoria": _categoria_es(taxonomy.category_label(c.get("category", ""))),
+                    "ofertas": c.get("records", 0),
+                }
                 for c in cats
             ],
             "categoria",
@@ -970,10 +988,7 @@ def tab_landscape(bundle: A.DemoBundle) -> None:
         raw_pairs = [p for p in pairs.get("pairs", []) if isinstance(p, dict)]
         if raw_pairs:
             st.markdown("### Pares de habilidades más frecuentes")
-            st.markdown(
-                "Pares de habilidades distintas de la misma oferta (sin orden, "
-                "contados una vez por oferta)."
-            )
+            st.markdown("Pares de habilidades distintas de la misma oferta (sin orden, contados una vez por oferta).")
             top = sorted(raw_pairs, key=lambda p: -p.get("records", 0))[:8]
             st.table(
                 [
@@ -1022,15 +1037,12 @@ def _matcher_evidence_blocks(record: A.JobRecord, taxonomy: A.TaxonomyInfo) -> N
             "keyword": "palabra clave",
             "alias": "alias",
         }.get(entry.term_type, "término")
-        apariciones = (
-            "1 aparición" if entry.occurrence_count == 1
-            else f"{entry.occurrence_count} apariciones"
-        )
+        apariciones = "1 aparición" if entry.occurrence_count == 1 else f"{entry.occurrence_count} apariciones"
         markdown_html(
             f'<div class="cite cite-verified">'
             f'<div class="quote">“{esc(entry.excerpt)}”</div>'
             f'<div class="meta">{esc(A.field_es(entry.field))} · '
-            f'término «{esc(entry.matched_term)}» · {apariciones} · {esc(term_type)}</div>'
+            f"término «{esc(entry.matched_term)}» · {apariciones} · {esc(term_type)}</div>"
             "</div>"
         )
 
@@ -1039,11 +1051,7 @@ def _verify_and_render_quote(record: A.JobRecord, ev: A.ReviewEvidence) -> None:
     value = record.field_value(ev.field)
     ok = A.verify_quote(value, ev.char_start, ev.char_end, ev.exact_quote)
     kind = "cite-verified" if ok else "cite-broken"
-    status = (
-        "cita verificada"
-        if ok
-        else "la cita ya no coincide con el artefacto — los datos cambiaron"
-    )
+    status = "cita verificada" if ok else "la cita ya no coincide con el artefacto — los datos cambiaron"
     markdown_html(
         f'<div class="cite {kind}">'
         f'<div class="quote">“{esc(ev.exact_quote)}”</div>'
@@ -1079,9 +1087,7 @@ def _verdict_block(
     if decision is not None:
         # Los pares resueltos por la revisión humana muestran el criterio aprobado;
         # el motivo y las preguntas originales (históricos) viven en «Detalles técnicos».
-        st.markdown(
-            f"**Motivo de la decisión humana:** {_criterio_final_es(decision)}"
-        )
+        st.markdown(f"**Motivo de la decisión humana:** {_criterio_final_es(decision)}")
         st.caption(_aprobacion_es(decision))
     elif label.reason:
         st.markdown(f"**Motivo de la revisión:** {_motivo_revision_es(label.reason)}")
@@ -1120,10 +1126,7 @@ def tab_jobs(bundle: A.DemoBundle) -> None:
         "veredicto final de la revisión humana completa sobre las 37 habilidades "
         "posibles."
     )
-    labels = [
-        f"{_es(record.display_title)} — {_es(record.display_company)}"
-        for record in records
-    ]
+    labels = [f"{_es(record.display_title)} — {_es(record.display_company)}" for record in records]
     selected = st.selectbox("Oferta de trabajo", labels, key="job_select")
     index = labels.index(selected) if selected in labels else 0
     record = records[index]
@@ -1177,18 +1180,17 @@ def tab_jobs(bundle: A.DemoBundle) -> None:
         if label.label == "supported":
             if label.is_adjudicated:
                 _verdict_block(
-                    bundle, record, label,
-                    highlight="decisión humana aprobada", highlight_kind="supported",
+                    bundle,
+                    record,
+                    label,
+                    highlight="decisión humana aprobada",
+                    highlight_kind="supported",
                 )
             else:
                 _verdict_block(bundle, record, label)
 
     predicted = set(record.skills)
-    disagreements = [
-        label
-        for label in labels
-        if label.label == "not_supported" and label.skill_id in predicted
-    ]
+    disagreements = [label for label in labels if label.label == "not_supported" and label.skill_id in predicted]
     if disagreements:
         st.markdown("#### El buscador predijo estas — la revisión final no está de acuerdo")
         st.markdown(
@@ -1199,8 +1201,11 @@ def tab_jobs(bundle: A.DemoBundle) -> None:
         for label in disagreements:
             if label.is_adjudicated:
                 _verdict_block(
-                    bundle, record, label,
-                    highlight="decisión humana aprobada", highlight_kind="supported",
+                    bundle,
+                    record,
+                    label,
+                    highlight="decisión humana aprobada",
+                    highlight_kind="supported",
                 )
             else:
                 _verdict_block(bundle, record, label, highlight="falso positivo final", highlight_kind="unsupported")
@@ -1243,17 +1248,17 @@ def tab_audit(bundle: A.DemoBundle) -> None:
     )
 
     st.markdown("### Matriz de contingencia (final)")
-    st.markdown(
-        "Las métricas finales agrupan todos los pares; no queda ningún par "
-        "incierto."
-    )
+    st.markdown("Las métricas finales agrupan todos los pares; no queda ningún par incierto.")
     st.table(
         [
             {"Celda": "Verdaderos positivos (la revisión respalda y el buscador detectó)", "Pares": m.get("tp", 0)},
             {"Celda": "Falsos positivos (el buscador detectó, la revisión no respalda)", "Pares": m.get("fp", 0)},
             {"Celda": "Falsos negativos (la revisión respalda, el buscador omitió)", "Pares": m.get("fn", 0)},
             {"Celda": "Verdaderos negativos (ambos coinciden: no hay evidencia)", "Pares": m.get("tn", 0)},
-            {"Celda": "Inciertos (hoy no hay ninguno: las 7 decisiones fueron resueltas)", "Pares": label_counts.get("uncertain", 0)},
+            {
+                "Celda": "Inciertos (hoy no hay ninguno: las 7 decisiones fueron resueltas)",
+                "Pares": label_counts.get("uncertain", 0),
+            },
         ]
     )
     markdown_html(
@@ -1299,9 +1304,9 @@ def tab_audit(bundle: A.DemoBundle) -> None:
             if isinstance(evidence, dict):
                 markdown_html(
                     f'<div class="cite cite-verified"><div class="quote">'
-                    f'“{esc(evidence.get("excerpt", ""))}”</div>'
+                    f"“{esc(evidence.get('excerpt', ''))}”</div>"
                     f'<div class="meta">{esc(A.field_es(evidence.get("field", "")))} · '
-                    f'término «{esc(evidence.get("matched_term", ""))}»</div></div>'
+                    f"término «{esc(evidence.get('matched_term', ''))}»</div></div>"
                 )
             if fp.get("adjudication_id"):
                 decision = _decision_for(bundle, fp.get("source_id", ""), fp.get("skill_id", ""))
@@ -1356,8 +1361,7 @@ def tab_audit(bundle: A.DemoBundle) -> None:
 
     st.markdown("### Por qué las métricas finales no se generalizan")
     for line in (
-        "Las métricas son finales solo para esta muestra curada de 20 ofertas: no "
-        "describen el mercado completo.",
+        "Las métricas son finales solo para esta muestra curada de 20 ofertas: no describen el mercado completo.",
         "El buscador sigue siendo una línea base de palabras clave que no interpreta "
         "negaciones; no está validada de forma definitiva para el mercado completo.",
         "La primera pasada cubrió solo 60 de los 740 pares; la comparación "
@@ -1414,8 +1418,7 @@ def tab_provenance(bundle: A.DemoBundle) -> None:
     obs = quality.get("observation_status_counts", {})
     active = obs.get("active") if isinstance(obs, dict) else None
     bullets = [
-        f"- Campos revisados sin valores faltantes: "
-        f"{sum(missing.values()) if isinstance(missing, dict) else '?'}.",
+        f"- Campos revisados sin valores faltantes: {sum(missing.values()) if isinstance(missing, dict) else '?'}.",
         f"- Ofertas duplicadas (mismo identificador): "
         f"{dups.get('duplicate_source_id_records', '?') if isinstance(dups, dict) else '?'}.",
     ]
@@ -1550,8 +1553,7 @@ def _render_technical_details(bundle: A.DemoBundle) -> None:
                     "source_id": item.get("source_id", "—"),
                     "skill_id": item.get("skill_id", "—"),
                     "1.ª pasada": (
-                        "sin etiqueta" if item.get("first_pass_unlabeled")
-                        else item.get("first_pass_label") or "—"
+                        "sin etiqueta" if item.get("first_pass_unlabeled") else item.get("first_pass_label") or "—"
                     ),
                     "2.ª pasada": item.get("second_pass_label", "—"),
                     "Final": item.get("final_label", "—"),
@@ -1609,12 +1611,7 @@ def _render_technical_details(bundle: A.DemoBundle) -> None:
         excluded = taxonomy.excluded_terms
         if excluded:
             st.markdown("#### Términos excluidos de la taxonomía")
-            st.table(
-                [
-                    {"Término": k, "Motivo": "Excluido por una regla explícita de la taxonomía."}
-                    for k in excluded
-                ]
-            )
+            st.table([{"Término": k, "Motivo": "Excluido por una regla explícita de la taxonomía."} for k in excluded])
         st.markdown("#### Definiciones y salvaguardas")
         st.markdown(
             "- **Métricas primarias:** precisión, recall y F1 finales se calculan sobre los 740 "
