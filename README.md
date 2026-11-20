@@ -1,6 +1,14 @@
-# Ecuador Job Market Intelligence
+# Remote tech-job skills evidence desk (Ecuador-eligible filter pending)
 
-> Un producto de datos de extremo a extremo, Python-primero, que convierte ofertas públicas de empleo en una vista explorable y **basada en evidencia** de las habilidades que pide el mercado laboral de datos, IA y software en Ecuador y remoto.
+[![CI](https://github.com/Eduardo12Pacheco/ecuador-job-market-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/Eduardo12Pacheco/ecuador-job-market-intelligence/actions/workflows/ci.yml)
+
+> **TL;DR (English)** — A local Streamlit evidence desk over a bounded 20-offer Himalayas capture, documenting tech-skill demand with exact keyword citations.
+> **Key result:** all 740 offer × skill pairs human-reviewed; micro precision 0.714, recall 1.0, F1 0.833 — for this curated sample only, never market coverage.
+> **Location scope:** worldwide 12, other_country 8, explicit_ec 0 — the Ecuador-eligible filter is pending.
+> **Quickstart:** `uv sync --extra demo` · `uv run --extra demo streamlit run app/evidence_desk.py` · open `http://localhost:8501`.
+> **Status:** evaluation final for the curated sample only; the app reads local artifacts and makes no network calls.
+
+> Un producto de datos de extremo a extremo, Python-primero, que convierte ofertas públicas de empleo en una vista explorable y **basada en evidencia** de las habilidades que pide el mercado laboral de datos, IA y software en Ecuador y remoto — el filtro de elegibilidad ecuatoriana aún no está implementado (`explicit_ec` = 0).
 
 **Estado:** `evaluation-final-for-curated-20-offer-sample` · `demo-ready` · `portfolio-ready` — la evaluación es **final solo para la muestra curada de 20 ofertas**, nunca una afirmación de cobertura de mercado.
 
@@ -35,6 +43,10 @@ Los 16 falsos positivos son coincidencias de palabras clave en menciones negativ
 
 Visualizaciones descriptivas de línea base (frecuencia, cobertura por categoría, coocurrencia): `data/analytics/visualizations/development-sample-0.1.0/` — son evidencia descriptiva de palabras clave, no correlación ni representatividad.
 
+**Alcance de ubicación.** De las 20 ofertas, 12 son `worldwide`, 8 son `other_country` y **ninguna es `explicit_ec`**. La captura sirve para describir habilidades en ofertas remotas, pero todavía no permite afirmar elegibilidad ecuatoriana: el filtro correspondiente está pendiente y no se infiere desde zona horaria, idioma, moneda ni texto de la descripción.
+
+**Consumidor downstream.** [`ecuador-decision-intelligence-platform`](https://github.com/Eduardo12Pacheco/ecuador-decision-intelligence-platform) ingiere una muestra de 3 registros de `data/analytics/development-sample-0.1.0.json` bajo su contrato `job_market.himalayas_development_sample/v1` y la expone en `/api/v1/job-market/skills`.
+
 ## Cómo funciona
 
 ```mermaid
@@ -64,6 +76,7 @@ La independencia de la anotación está probada: la segunda pasada etiqueta leye
 | Frescura | 45 815,6095 s entre `updatedAt` de la fuente y la captura |
 | Taxonomía | `technical-skills-0.1.0` · 37 habilidades en 8 categorías |
 | Matcher | `keyword-baseline-0.1.0` · sin negación, sin semántica |
+| Alcance de ubicación (`location_scope`) | `worldwide` 12 · `other_country` 8 · `explicit_ec` 0 · `unknown` 0 (filtro de elegibilidad ecuatoriana pendiente) |
 
 ## Ejecutar la demo
 
@@ -103,6 +116,7 @@ docs/                                contratos, evaluación, brief y guion de de
 ## ⚠️ Limitaciones
 
 - **Una página, una fuente.** 20 ofertas de la página 1 de Himalayas (`complete: false`); no hay feed completo descargado ni segunda fuente. Himalayas es una bolsa de trabajo, no el mercado laboral ecuatoriano.
+- **Filtro de elegibilidad ecuatoriana pendiente.** `location_scope` da `worldwide` 12, `other_country` 8 y `explicit_ec` 0; ninguna oferta declara Ecuador explícitamente y no se infiere elegibilidad por señales indirectas.
 - **La evaluación es final solo para la muestra curada.** Las métricas describen exactamente estos 740 pares; no se generalizan y nunca se presentan como cobertura de mercado.
 - **El matcher es una línea base de palabras clave.** No interpreta negación ni contexto (una mención «no se requiere IA» igual coincide con `skill.ai`), no usa LLMs, embeddings ni búsqueda semántica.
 - **`no_evidence` ≠ ausencia.** Un registro sin coincidencias no demuestra que el puesto no pida la habilidad; una habilidad con 0 coincidencias en la muestra tampoco.
