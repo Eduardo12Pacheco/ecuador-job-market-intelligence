@@ -42,7 +42,7 @@ import os
 import re
 import tempfile
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse
 
@@ -148,9 +148,7 @@ class LocalCaptureStore:
         if isinstance(raw_page.status_code, bool) or not isinstance(raw_page.status_code, int):
             raise ValueError("raw_page.status_code debe ser un entero")
         if not 200 <= raw_page.status_code < 300:
-            raise StorageError(
-                f"se rechaza persistir una captura no 2xx: HTTP {raw_page.status_code}"
-            )
+            raise StorageError(f"se rechaza persistir una captura no 2xx: HTTP {raw_page.status_code}")
         offset = raw_page.offset
         if isinstance(offset, bool) or not isinstance(offset, int) or offset < 0:
             raise ValueError("raw_page.offset debe ser un entero no negativo")
@@ -167,8 +165,7 @@ class LocalCaptureStore:
         sha256 = hashlib.sha256(body).hexdigest()
         if not isinstance(raw_page.sha256, str) or raw_page.sha256 != sha256:
             raise IntegrityError(
-                f"desajuste de SHA-256 para {source}/{endpoint}: se suministró "
-                f"{raw_page.sha256!r}, se calculó {sha256}"
+                f"desajuste de SHA-256 para {source}/{endpoint}: se suministró {raw_page.sha256!r}, se calculó {sha256}"
             )
 
         request_params, redacted = _sanitize_request_params(raw_page.request_params)
@@ -237,9 +234,7 @@ class LocalCaptureStore:
             "warnings": warnings_list,
             "errors": errors_list,
         }
-        manifest_bytes = (
-            json.dumps(manifest, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
-        ).encode("utf-8")
+        manifest_bytes = (json.dumps(manifest, ensure_ascii=True, indent=2, sort_keys=True) + "\n").encode("utf-8")
 
         self._write_atomic(raw_path, body)
         try:
@@ -326,7 +321,7 @@ def _require_utc(value: datetime, label: str) -> None:
 
 def _utc_iso(value: datetime) -> str:
     """Serializa una marca de tiempo como UTC ISO 8601, convirtiendo valores locales conscientes."""
-    return value.astimezone(timezone.utc).isoformat()
+    return value.astimezone(UTC).isoformat()
 
 
 def _sanitize_request_params(params: dict | None) -> tuple[dict, bool]:
@@ -334,9 +329,7 @@ def _sanitize_request_params(params: dict | None) -> tuple[dict, bool]:
     if params is None:
         raise ValueError("raw_page.request_params debe ser un dict, no None")
     if not isinstance(params, dict):
-        raise ValueError(
-            f"raw_page.request_params debe ser un dict; se obtuvo {type(params).__name__}"
-        )
+        raise ValueError(f"raw_page.request_params debe ser un dict; se obtuvo {type(params).__name__}")
     cleaned: dict = {}
     redacted = False
     for key, value in params.items():

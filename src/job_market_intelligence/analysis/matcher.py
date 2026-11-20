@@ -105,7 +105,7 @@ def term_pattern(term: str) -> re.Pattern[str]:
     body = re.escape(tokens[0])
     for token in tokens[1:]:
         body += _CONNECTOR_RE + re.escape(token)
-    return re.compile(r"(?<![{0}]){1}(?![{0}])".format(_WORD_CHAR, body))
+    return re.compile(rf"(?<![{_WORD_CHAR}]){body}(?![{_WORD_CHAR}])")
 
 
 def field_text(job: CanonicalJob, field: str) -> str | None:

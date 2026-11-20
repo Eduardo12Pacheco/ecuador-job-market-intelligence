@@ -29,9 +29,10 @@ import hashlib
 import json
 import os
 import tempfile
+from collections.abc import Mapping
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from ..ingestion.models import CanonicalJob
 from ..ingestion.parser import parse_job, parse_page
@@ -47,9 +48,7 @@ DEFAULT_OUTPUT_PATH = "data/analytics/development-sample-0.1.0.json"
 #: El SHA-256 crudo documentado de la captura en vivo autorizada. Materializar una
 #: captura distinta con otro hash es posible, pero el artefacto de desarrollo confirmado
 #: se genera exactamente a partir de esta captura.
-DOCUMENTED_CAPTURE_RAW_SHA256 = (
-    "0370798f7af4b0e39ab92fd0d486577f58cdd415812e612d6b86657ac07ab101"
-)
+DOCUMENTED_CAPTURE_RAW_SHA256 = "0370798f7af4b0e39ab92fd0d486577f58cdd415812e612d6b86657ac07ab101"
 
 
 def _read_manifest(manifest_path: str | Path) -> dict:
@@ -113,9 +112,7 @@ def _parse_canonical_projection(
     except (TypeError, ValueError) as exc:
         raise DatasetIntegrityError(f"el 'captured_at' del manifiesto no es ISO 8601: {captured_at_raw!r}") from exc
     if captured_at.tzinfo is None:
-        raise DatasetIntegrityError(
-            f"el 'captured_at' del manifiesto es ingenuo en zona horaria: {captured_at_raw!r}"
-        )
+        raise DatasetIntegrityError(f"el 'captured_at' del manifiesto es ingenuo en zona horaria: {captured_at_raw!r}")
     return tuple(
         parse_job(
             raw,
@@ -195,7 +192,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--manifest", default=DEFAULT_MANIFEST_PATH, help="ruta del JSON del manifiesto de captura")
     parser.add_argument("--taxonomy", default=DEFAULT_TAXONOMY_PATH, help="ruta del JSON del artefacto de taxonomía")
-    parser.add_argument("--output", default=DEFAULT_OUTPUT_PATH, help="ruta de salida del artefacto del conjunto de datos")
+    parser.add_argument(
+        "--output", default=DEFAULT_OUTPUT_PATH, help="ruta de salida del artefacto del conjunto de datos"
+    )
     parser.add_argument(
         "--snapshot-id",
         default=None,

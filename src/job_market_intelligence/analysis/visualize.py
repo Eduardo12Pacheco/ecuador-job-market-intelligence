@@ -89,7 +89,7 @@ def materialize_descriptive_analysis(
     Totalmente offline y determinista. Eleva :class:`DatasetError` cuando la salida
     cambiaría el contenido existente y :class:`DescriptiveError` cuando el conjunto
     de datos no es la muestra de desarrollo documentada.
-"""
+    """
     dataset = _read_dataset(dataset_path)
     taxonomy = load_taxonomy(taxonomy_path)
     analysis = build_descriptive_analysis(dataset, taxonomy)

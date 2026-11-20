@@ -38,9 +38,9 @@ from __future__ import annotations
 
 import hashlib
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, replace
-from datetime import datetime, timezone
-from typing import Callable
+from datetime import UTC, datetime
 
 import httpx
 
@@ -107,7 +107,7 @@ class HimalayaAdapter:
             raise ValueError("pase únicamente client o transport, no ambos")
         self._owns_client = client is None
         self._client = client if client is not None else httpx.Client(transport=transport, timeout=30.0)
-        self._clock = clock if clock is not None else lambda: datetime.now(timezone.utc)
+        self._clock = clock if clock is not None else lambda: datetime.now(UTC)
 
     def close(self) -> None:
         """Cierra el cliente propio del adaptador (no-op cuando se inyectó un cliente)."""
@@ -139,9 +139,7 @@ class HimalayaAdapter:
         petición.
         """
         if not isinstance(store, LocalCaptureStore):
-            raise TypeError(
-                f"store debe ser un LocalCaptureStore; se obtuvo {type(store).__name__}"
-            )
+            raise TypeError(f"store debe ser un LocalCaptureStore; se obtuvo {type(store).__name__}")
 
         snapshot_id = uuid.uuid4().hex
         page, _records = self._collect_page(0, limit=DEFAULT_LIMIT, snapshot_id=snapshot_id)
@@ -197,8 +195,7 @@ class HimalayaAdapter:
 
                 if pages and page.sha256 == pages[-1].sha256:
                     raise PaginationError(
-                        f"firma de página repetida en offset={offset}; la API parece "
-                        f"ignorar el parámetro offset"
+                        f"firma de página repetida en offset={offset}; la API parece ignorar el parámetro offset"
                     )
                 if page.job_count == 0 and page.total_count > 0:
                     raise PaginationError(
@@ -237,9 +234,7 @@ class HimalayaAdapter:
                             if "duplicate_guid" in existing.quality_flags
                             else [*existing.quality_flags, "duplicate_guid"]
                         )
-                        records_by_key[key] = replace(
-                            existing, last_seen_at=record.last_seen_at, quality_flags=flags
-                        )
+                        records_by_key[key] = replace(existing, last_seen_at=record.last_seen_at, quality_flags=flags)
 
                 pages.append(page)
                 offset += page.job_count
@@ -278,9 +273,7 @@ class HimalayaAdapter:
                 )
             raise
 
-    def _collect_page(
-        self, offset: int, *, limit: int, snapshot_id: str
-    ) -> tuple[RawPage, tuple[CanonicalJob, ...]]:
+    def _collect_page(self, offset: int, *, limit: int, snapshot_id: str) -> tuple[RawPage, tuple[CanonicalJob, ...]]:
         """Obtiene y parsea una página; eleva errores tipados ante cualquier fallo."""
         request_params = {"limit": limit, "offset": offset}
         captured_at = self._clock()
@@ -289,9 +282,7 @@ class HimalayaAdapter:
         except httpx.HTTPError as exc:
             raise HimalayasHttpError(f"la petición falló para offset={offset}: {exc}") from exc
         if not 200 <= response.status_code < 300:
-            raise HimalayasHttpError(
-                f"respuesta no 2xx para offset={offset}: HTTP {response.status_code}"
-            )
+            raise HimalayasHttpError(f"respuesta no 2xx para offset={offset}: HTTP {response.status_code}")
 
         body = response.content
         content_type = response.headers.get("content-type")

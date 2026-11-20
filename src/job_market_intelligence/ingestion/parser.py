@@ -21,7 +21,7 @@ Notas de comportamiento (mapeo del contrato de
 from __future__ import annotations
 
 import hashlib
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from .errors import MalformedResponseError, TimestampError
@@ -84,7 +84,7 @@ def parse_unix_timestamp(value: Any) -> tuple[datetime | None, TimestampUnit]:
     unit = detect_timestamp_unit(numeric)
     if unit is TimestampUnit.UNIX_MILLISECONDS:
         numeric //= 1000
-    return datetime.fromtimestamp(numeric, tz=timezone.utc), unit
+    return datetime.fromtimestamp(numeric, tz=UTC), unit
 
 
 def classify_location_scope(value: Any) -> LocationScope:
@@ -102,16 +102,14 @@ def classify_location_scope(value: Any) -> LocationScope:
 def canonical_id_for(source_id: str) -> str:
     """SHA-256 determinista de ``source`` + ``source_id``."""
     digest = hashlib.sha256()
-    digest.update(f"{SOURCE}\0{source_id}".encode("utf-8"))
+    digest.update(f"{SOURCE}\0{source_id}".encode())
     return digest.hexdigest()
 
 
 def _require_int(payload: dict, key: str) -> int:
     value = payload.get(key)
     if isinstance(value, bool) or not isinstance(value, int):
-        raise MalformedResponseError(
-            f"el campo de paginación requerido {key!r} falta o no es un entero: {value!r}"
-        )
+        raise MalformedResponseError(f"el campo de paginación requerido {key!r} falta o no es un entero: {value!r}")
     return value
 
 
@@ -123,14 +121,10 @@ def parse_page(payload: Any) -> ParsedPage:
     inverosímil.
     """
     if not isinstance(payload, dict):
-        raise MalformedResponseError(
-            f"el payload de la respuesta no es un objeto JSON: {type(payload).__name__}"
-        )
+        raise MalformedResponseError(f"el payload de la respuesta no es un objeto JSON: {type(payload).__name__}")
     jobs = payload.get("jobs")
     if not isinstance(jobs, list):
-        raise MalformedResponseError(
-            f"el campo requerido 'jobs' no es una lista: {type(jobs).__name__}"
-        )
+        raise MalformedResponseError(f"el campo requerido 'jobs' no es una lista: {type(jobs).__name__}")
     total_count = _require_int(payload, "totalCount")
     offset = _require_int(payload, "offset")
     limit = _require_int(payload, "limit")
@@ -272,9 +266,7 @@ def parse_job(
         location_scope = LocationScope.UNKNOWN
     else:
         location_scope = classify_location_scope(location_raw)
-        location_restrictions_raw = [
-            item if isinstance(item, str) else str(item) for item in location_raw
-        ]
+        location_restrictions_raw = [item if isinstance(item, str) else str(item) for item in location_raw]
 
     timezone_raw = raw.get("timezoneRestrictions")
     timezone_restrictions_raw: list[int | float] = (
@@ -283,12 +275,8 @@ def parse_job(
         else []
     )
 
-    published_at_raw, published_at_utc = _parse_job_timestamp(
-        raw, "pubDate", flags, expected_unit
-    )
-    expires_at_raw, expires_at_utc = _parse_job_timestamp(
-        raw, "expiryDate", flags, expected_unit
-    )
+    published_at_raw, published_at_utc = _parse_job_timestamp(raw, "pubDate", flags, expected_unit)
+    expires_at_raw, expires_at_utc = _parse_job_timestamp(raw, "expiryDate", flags, expected_unit)
 
     def optional_number(key: str) -> int | float | None:
         value = raw.get(key)
