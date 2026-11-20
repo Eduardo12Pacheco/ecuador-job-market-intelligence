@@ -201,7 +201,7 @@ class TestDeterministicBytes:
         first_paths = build_visualizations(analysis, first)
         second_paths = build_visualizations(analysis, second)
         assert [p.name for p in first_paths] == [p.name for p in second_paths]
-        for fp, sp in zip(first_paths, second_paths):
+        for fp, sp in zip(first_paths, second_paths, strict=True):
             assert fp.read_bytes() == sp.read_bytes()
 
     def test_materialize_deterministic(self, tmp_path) -> None:
@@ -229,10 +229,14 @@ class TestCli:
         out = tmp_path / "cli"
         code = main(
             [
-                "--dataset", str(DATASET_PATH),
-                "--taxonomy", str(TAXONOMY_PATH),
-                "--analysis-output", str(out / "analysis.json"),
-                "--visualizations-dir", str(out / "viz"),
+                "--dataset",
+                str(DATASET_PATH),
+                "--taxonomy",
+                str(TAXONOMY_PATH),
+                "--analysis-output",
+                str(out / "analysis.json"),
+                "--visualizations-dir",
+                str(out / "viz"),
             ]
         )
         assert code == 0
@@ -244,10 +248,14 @@ class TestCli:
     def test_cli_repeat_run_is_byte_identical_noop(self, tmp_path) -> None:
         out = tmp_path / "cli"
         args = [
-            "--dataset", str(DATASET_PATH),
-            "--taxonomy", str(TAXONOMY_PATH),
-            "--analysis-output", str(out / "analysis.json"),
-            "--visualizations-dir", str(out / "viz"),
+            "--dataset",
+            str(DATASET_PATH),
+            "--taxonomy",
+            str(TAXONOMY_PATH),
+            "--analysis-output",
+            str(out / "analysis.json"),
+            "--visualizations-dir",
+            str(out / "viz"),
         ]
         assert main(args) == 0
         first = (out / "analysis.json").read_bytes()

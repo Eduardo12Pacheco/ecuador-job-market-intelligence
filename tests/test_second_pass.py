@@ -59,16 +59,14 @@ from job_market_intelligence.analysis.evaluation import (
     SAMPLE_RECORDS,
     SNAPSHOT_ID,
     load_evaluation,
-    resolve_quote_span,
 )
 from job_market_intelligence.analysis.review import (
     REVIEW_ARTIFACT_DEFAULT_PATH,
-    REVIEW_REPORT_DEFAULT_PATH,
     materialize_second_pass_review,
 )
 from job_market_intelligence.analysis.second_pass import (
-    REVIEWED_FIELDS,
     REVIEW_VERSION,
+    REVIEWED_FIELDS,
     annotate_second_pass,
     build_second_pass_doc,
     build_second_pass_report,
@@ -186,9 +184,7 @@ class TestAnnotate:
         pairs = [(label.source_id, label.skill_id) for label in labels]
         assert len(set(pairs)) == EXPECTED["labels_total"]
         expected_pairs = {
-            (record["source_id"], skill.skill_id)
-            for record in dataset["records"]
-            for skill in taxonomy.skills
+            (record["source_id"], skill.skill_id) for record in dataset["records"] for skill in taxonomy.skills
         }
         assert set(pairs) == expected_pairs
 
@@ -223,15 +219,13 @@ class TestAnnotate:
                 value = record_by_source[label.source_id][ev.field]
                 assert isinstance(value, str)
                 assert ev.char_start >= 0 and ev.char_end <= len(value)
-                assert value[ev.char_start:ev.char_end] == ev.exact_quote
+                assert value[ev.char_start : ev.char_end] == ev.exact_quote
                 assert len(ev.exact_quote) <= 100
 
     def test_negative_requirement_cases_documented(self, dataset, taxonomy) -> None:
         labels = annotate_second_pass(dataset, taxonomy)
         german_ai = next(
-            label
-            for label in labels
-            if label.source_id == SOURCE_IDS["german"] and label.skill_id == "skill.ai"
+            label for label in labels if label.source_id == SOURCE_IDS["german"] and label.skill_id == "skill.ai"
         )
         assert german_ai.label == "not_supported"
         assert "No prior experience in AI is required" in german_ai.reason
@@ -338,9 +332,7 @@ class TestSchema:
     def test_not_supported_must_have_empty_evidence(self, dataset) -> None:
         doc = build_second_pass_doc(dataset, load_taxonomy(TAXONOMY_PATH))
         ns = next(label for label in doc["labels"] if label["label"] == "not_supported")
-        ns["evidence"] = [
-            {"field": "title_raw", "exact_quote": "x", "char_start": 0, "char_end": 1}
-        ]
+        ns["evidence"] = [{"field": "title_raw", "exact_quote": "x", "char_start": 0, "char_end": 1}]
         with pytest.raises(EvaluationError):
             second_pass_from_dict(doc)
 
@@ -407,9 +399,7 @@ class TestCrossValidation:
             human_review_question=first.human_review_question,
             notes=first.notes,
         )
-        bad = second_pass.__class__(
-            **{**second_pass.__dict__, "labels": tuple(labels)}
-        )
+        bad = second_pass.__class__(**{**second_pass.__dict__, "labels": tuple(labels)})
         with pytest.raises(EvaluationError):
             validate_second_pass(bad, dataset, taxonomy)
 
@@ -436,9 +426,7 @@ class TestCrossValidation:
         doc = build_second_pass_doc(dataset, taxonomy)
         with pytest.raises(EvaluationError):
             validate_second_pass(
-                second_pass_from_dict(
-                    {**doc, "sample": {**doc["sample"], "records": 19}}
-                ),
+                second_pass_from_dict({**doc, "sample": {**doc["sample"], "records": 19}}),
                 dataset,
                 taxonomy,
             )
@@ -447,7 +435,6 @@ class TestCrossValidation:
         doc = build_second_pass_doc(dataset, taxonomy)
         entry = next(label for label in doc["labels"] if label["evidence"])
         ev = entry["evidence"][0]
-        field = ev["field"]
         for mutated in (
             {**ev, "char_start": ev["char_start"] + 1},
             {**ev, "char_end": ev["char_end"] - 1},
@@ -505,9 +492,7 @@ class TestFirstVsSecond:
                 assert entry["human_review_question"]
 
     def test_comparison_deterministic(self, first_pass, second_pass) -> None:
-        assert compare_first_vs_second(first_pass, second_pass) == compare_first_vs_second(
-            first_pass, second_pass
-        )
+        assert compare_first_vs_second(first_pass, second_pass) == compare_first_vs_second(first_pass, second_pass)
 
 
 # ---------------------------------------------------------------------------
@@ -568,8 +553,13 @@ class TestMetricsVsMatcher:
         assert macro["recall"] == pytest.approx(EXPECTED["macro_recall"])
         assert macro["f1"] == pytest.approx(EXPECTED["macro_f1"])
         assert macro["per_skill"]["skill.ai"] == {
-            "tp": 3, "fp": 13, "fn": 0, "tn": 1,
-            "precision": pytest.approx(3 / 16), "recall": 1.0, "f1": pytest.approx(6 / 19),
+            "tp": 3,
+            "fp": 13,
+            "fn": 0,
+            "tn": 1,
+            "precision": pytest.approx(3 / 16),
+            "recall": 1.0,
+            "f1": pytest.approx(6 / 19),
         }
 
     def test_uncertain_excluded_from_primary_metrics(self, second_pass, dataset, taxonomy) -> None:
@@ -590,9 +580,7 @@ class TestMetricsVsMatcher:
 
 class TestReport:
     def test_coverage_is_complete(self, second_pass, dataset, taxonomy) -> None:
-        report = build_second_pass_report(
-            load_evaluation(FIRST_PASS_PATH), second_pass, dataset, taxonomy
-        )
+        report = build_second_pass_report(load_evaluation(FIRST_PASS_PATH), second_pass, dataset, taxonomy)
         coverage = report["coverage"]
         assert coverage["labeled_pairs"] == 740
         assert coverage["total_pairs"] == 740
@@ -602,9 +590,7 @@ class TestReport:
         assert coverage["annotated_record_coverage"] == 1.0
 
     def test_report_sections_and_guardrails(self, second_pass, dataset, taxonomy) -> None:
-        report = build_second_pass_report(
-            load_evaluation(FIRST_PASS_PATH), second_pass, dataset, taxonomy
-        )
+        report = build_second_pass_report(load_evaluation(FIRST_PASS_PATH), second_pass, dataset, taxonomy)
         assert report["evaluation_version"] == REVIEW_VERSION
         assert report["annotation_status"] == "draft_second_pass"
         assert report["human_review_required"] is True
@@ -617,7 +603,7 @@ class TestReport:
         assert report["record_summary"]["records_reviewed"] == 20
         assert report["record_summary"]["records_without_evidence"] == 0
         assert any("human review" in w for w in report["warnings"])
-        assert any("market" in l for l in report["limitations"])
+        assert any("market" in limitation for limitation in report["limitations"])
         assert any("not gold" in g or "not gold" in g for g in report["guardrails"])
 
     def test_report_deterministic_repeated_output(self, first_pass, second_pass, dataset, taxonomy) -> None:
@@ -631,15 +617,11 @@ class TestReport:
         canonical = json.dumps(doc, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
         assert SECOND_PASS_PATH.read_text(encoding="utf-8") == canonical
         assert serialize_second_pass(doc) == canonical.encode("utf-8")
-        assert serialize_second_pass(doc) == serialize_second_pass(
-            build_second_pass_doc(dataset, taxonomy)
-        )
+        assert serialize_second_pass(doc) == serialize_second_pass(build_second_pass_doc(dataset, taxonomy))
 
     def test_no_full_raw_descriptions_in_artifacts(self, second_pass, dataset, taxonomy) -> None:
         doc = json.loads(SECOND_PASS_PATH.read_text(encoding="utf-8"))
-        report = build_second_pass_report(
-            load_evaluation(FIRST_PASS_PATH), second_pass, dataset, taxonomy
-        )
+        report = build_second_pass_report(load_evaluation(FIRST_PASS_PATH), second_pass, dataset, taxonomy)
         banned = ("micro1 is engaging", "Originally posted on", "Scope of Work", "<p>", "<h3>")
 
         def walk(node):

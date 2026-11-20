@@ -49,7 +49,11 @@ def test_final_artifacts_close_queue_and_record_all_approvals() -> None:
     assert report["human_review_queue"] == {
         "count": 0,
         "items": [],
-        "note": "current state: queue closed; the seven approved decisions are recorded in human_review_decisions and the frozen v0.2.0 queue is preserved under historical.human_review_queue",
+        "note": (
+            "current state: queue closed; the seven approved decisions are recorded in "
+            "human_review_decisions and the frozen v0.2.0 queue is preserved under "
+            "historical.human_review_queue"
+        ),
     }
     assert len(report["human_review_decisions"]) == 7
     assert report["label_distribution"]["final"] == {

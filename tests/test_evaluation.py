@@ -39,7 +39,6 @@ Contratos bajo prueba:
 
 from __future__ import annotations
 
-import copy
 import json
 from pathlib import Path
 
@@ -368,9 +367,7 @@ class TestCrossValidation:
     def test_snapshot_mismatch_rejected(self, dataset, taxonomy) -> None:
         rec = dataset["records"][0]
         ev = evidence(rec, "title_raw", rec["title_raw"])
-        doc = make_evaluation(
-            [label(rec["source_id"], "skill.ai", evidence_=[ev])], snapshot_id="cap_other"
-        )
+        doc = make_evaluation([label(rec["source_id"], "skill.ai", evidence_=[ev])], snapshot_id="cap_other")
         evaluation = evaluation_from_dict(doc)
         with pytest.raises(EvaluationError):
             validate_evaluation(evaluation, dataset, taxonomy)
@@ -612,8 +609,13 @@ class TestMetrics:
         assert macro["recall"] == pytest.approx(EXPECTED["macro_recall"])
         assert macro["f1"] == pytest.approx(EXPECTED["macro_f1"])
         assert macro["per_skill"]["skill.ai"] == {
-            "tp": 3, "fp": 5, "fn": 0, "tn": 1,
-            "precision": pytest.approx(0.375), "recall": 1.0, "f1": pytest.approx(6 / 11),
+            "tp": 3,
+            "fp": 5,
+            "fn": 0,
+            "tn": 1,
+            "precision": pytest.approx(0.375),
+            "recall": 1.0,
+            "f1": pytest.approx(6 / 11),
         }
 
     def test_uncertain_reported_separately(self, evaluation, dataset, taxonomy) -> None:
@@ -733,7 +735,7 @@ class TestCoverageAndReport:
         assert len(report["false_positives"]) == EXPECTED["fp"]
         assert len(report["false_negatives"]) == EXPECTED["fn"]
         assert any("draft" in w for w in report["warnings"])
-        assert any("market" in l for l in report["limitations"])
+        assert any("market" in limitation for limitation in report["limitations"])
         assert any("unlabeled" in g for g in report["guardrails"])
         assert any("uncertain" in g for g in report["guardrails"])
 
@@ -829,7 +831,6 @@ class TestMaterializeReport:
 
     def test_materialize_rejects_invalid_labels_without_writing(self, tmp_path) -> None:
         doc = json.loads(EVALUATION_PATH.read_text(encoding="utf-8"))
-        record = json.loads(DATASET_PATH.read_text(encoding="utf-8"))["records"][0]
         doc["labels"][0]["evidence"][0]["char_start"] = 0  # corrompe el primer tramo de cita
         bad_eval = tmp_path / "bad-eval.json"
         bad_eval.write_text(json.dumps(doc), encoding="utf-8")

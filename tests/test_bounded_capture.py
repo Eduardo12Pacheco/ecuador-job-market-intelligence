@@ -18,11 +18,19 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC
 from pathlib import Path
 
 import httpx
 import pytest
+from conftest import (
+    BROWSE_ENDPOINT,
+    BROWSE_FIXTURE_SHA256,
+    BROWSE_METADATA_JSON,
+    FIXED_CAPTURED_AT,
+    encode,
+    make_page,
+)
 
 from job_market_intelligence.ingestion.adapter import (
     ADAPTER_VERSION,
@@ -46,18 +54,10 @@ from job_market_intelligence.ingestion.storage import (
     OverwriteError,
 )
 
-from conftest import (
-    BROWSE_ENDPOINT,
-    BROWSE_FIXTURE_SHA256,
-    BROWSE_METADATA_JSON,
-    FIXED_CAPTURED_AT,
-    encode,
-    make_page,
-)
+UTC = UTC
 
-UTC = timezone.utc
-
-# Contrato de ruta determinista compartido con test_storage.py: componente de endpoint legible + sha256(endpoint)[:12] estable + offset rellenado con ceros.
+# Contrato de ruta determinista compartido con test_storage.py: componente de
+# endpoint legible + sha256(endpoint)[:12] estable + offset rellenado con ceros.
 ENDPOINT_HASH = hashlib.sha256(BROWSE_ENDPOINT.encode("utf-8")).hexdigest()[:12]
 EXPECTED_RAW_RELATIVE = f"data/raw/himalayas/jobs_api_{ENDPOINT_HASH}/00000000.json"
 EXPECTED_MANIFEST_RELATIVE = f"data/manifests/himalayas/jobs_api_{ENDPOINT_HASH}/00000000.manifest.json"
@@ -105,12 +105,12 @@ class TestSinglePageCapture:
         assert result.page.job_count == 20
         assert result.page.total_count == 45
 
-    def test_exact_bytes_preserved_and_sha_consistent(
-        self, tmp_path, monkeypatch, browse_fixture_bytes: bytes
-    ) -> None:
+    def test_exact_bytes_preserved_and_sha_consistent(self, tmp_path, monkeypatch, browse_fixture_bytes: bytes) -> None:
         monkeypatch.chdir(tmp_path)
         adapter, client = make_bounded_adapter(
-            lambda request: httpx.Response(200, content=browse_fixture_bytes, headers={"content-type": "application/json"})
+            lambda request: httpx.Response(
+                200, content=browse_fixture_bytes, headers={"content-type": "application/json"}
+            )
         )
         result = adapter.collect_and_persist_page(store=LocalCaptureStore())
         client.close()
@@ -123,12 +123,12 @@ class TestSinglePageCapture:
         assert manifest["raw_sha256"] == result.page.sha256
         assert manifest["raw_file_path"] == result.capture.raw_file_path_relative
 
-    def test_manifest_is_partial_with_bounded_warning(
-        self, tmp_path, monkeypatch, browse_fixture_bytes: bytes
-    ) -> None:
+    def test_manifest_is_partial_with_bounded_warning(self, tmp_path, monkeypatch, browse_fixture_bytes: bytes) -> None:
         monkeypatch.chdir(tmp_path)
         adapter, client = make_bounded_adapter(
-            lambda request: httpx.Response(200, content=browse_fixture_bytes, headers={"content-type": "application/json"})
+            lambda request: httpx.Response(
+                200, content=browse_fixture_bytes, headers={"content-type": "application/json"}
+            )
         )
         result = adapter.collect_and_persist_page(store=LocalCaptureStore())
         client.close()
@@ -143,7 +143,9 @@ class TestSinglePageCapture:
     ) -> None:
         monkeypatch.chdir(tmp_path)
         adapter, client = make_bounded_adapter(
-            lambda request: httpx.Response(200, content=browse_fixture_bytes, headers={"content-type": "application/json"})
+            lambda request: httpx.Response(
+                200, content=browse_fixture_bytes, headers={"content-type": "application/json"}
+            )
         )
         result = adapter.collect_and_persist_page(store=LocalCaptureStore())
         client.close()
@@ -171,7 +173,9 @@ class TestSinglePageCapture:
     def test_result_carries_typed_report_data(self, tmp_path, monkeypatch, browse_fixture_bytes: bytes) -> None:
         monkeypatch.chdir(tmp_path)
         adapter, client = make_bounded_adapter(
-            lambda request: httpx.Response(200, content=browse_fixture_bytes, headers={"content-type": "application/json"})
+            lambda request: httpx.Response(
+                200, content=browse_fixture_bytes, headers={"content-type": "application/json"}
+            )
         )
         result = adapter.collect_and_persist_page(store=LocalCaptureStore())
         client.close()
@@ -195,7 +199,9 @@ class TestSinglePageCapture:
     def test_deterministic_paths_and_capture_id(self, tmp_path, monkeypatch, browse_fixture_bytes: bytes) -> None:
         monkeypatch.chdir(tmp_path)
         adapter, client = make_bounded_adapter(
-            lambda request: httpx.Response(200, content=browse_fixture_bytes, headers={"content-type": "application/json"})
+            lambda request: httpx.Response(
+                200, content=browse_fixture_bytes, headers={"content-type": "application/json"}
+            )
         )
         result = adapter.collect_and_persist_page(store=LocalCaptureStore())
         client.close()
@@ -288,7 +294,9 @@ class TestFailClosed:
     def test_repeated_capture_of_same_key_is_rejected(self, tmp_path, monkeypatch, browse_fixture_bytes: bytes) -> None:
         monkeypatch.chdir(tmp_path)
         adapter, client = make_bounded_adapter(
-            lambda request: httpx.Response(200, content=browse_fixture_bytes, headers={"content-type": "application/json"})
+            lambda request: httpx.Response(
+                200, content=browse_fixture_bytes, headers={"content-type": "application/json"}
+            )
         )
         store = LocalCaptureStore()
         first = adapter.collect_and_persist_page(store=store)
