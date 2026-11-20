@@ -18,6 +18,7 @@ demo = [
 [dependency-groups]
 dev = [
     "pytest>=8",
+    "ruff>=0.9",
 ]
 
 [build-system]
@@ -29,3 +30,19 @@ packages = ["src/job_market_intelligence"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# Keep the existing ``str``-based enums: their string representation is part of
+# the serialized artifacts and must not change to ``StrEnum`` semantics.
+ignore = ["UP042"]
+
+[tool.ruff.lint.per-file-ignores]
+# User-facing Spanish copy and inline SVG markup are single long strings; wrapping
+# them would alter the rendered text or the generated asset.
+"app/evidence_desk.py" = ["E501"]
+"scripts/render_p1_evaluation_results.py" = ["E501"]
