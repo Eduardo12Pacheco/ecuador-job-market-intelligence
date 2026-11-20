@@ -47,27 +47,22 @@ de procedencia permanece en los cargadores de la tubería con cierre ante fallo.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 #: Raíz del repositorio resuelta desde este archivo (src/job_market_intelligence/demo/).
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 DATASET_PATH = REPO_ROOT / "data" / "analytics" / "development-sample-0.1.0.json"
-DESCRIPTIVE_PATH = (
-    REPO_ROOT / "data" / "analytics" / "descriptive-development-sample-0.1.0.json"
-)
+DESCRIPTIVE_PATH = REPO_ROOT / "data" / "analytics" / "descriptive-development-sample-0.1.0.json"
 REVIEW_PATH = REPO_ROOT / "data" / "evaluation" / "skill-extraction-review-0.3.0.json"
-REPORT_PATH = (
-    REPO_ROOT / "data" / "evaluation" / "skill-extraction-review-report-0.3.0.json"
-)
+REPORT_PATH = REPO_ROOT / "data" / "evaluation" / "skill-extraction-review-report-0.3.0.json"
 #: Artefactos históricos de segunda pasada en borrador (v0.2.0) — nunca se sobrescriben;
 #: siguen siendo cargables/legibles mediante estas constantes explícitas o cualquier ruta explícita.
 REVIEW_PATH_V020 = REPO_ROOT / "data" / "evaluation" / "skill-extraction-review-0.2.0.json"
-REPORT_PATH_V020 = (
-    REPO_ROOT / "data" / "evaluation" / "skill-extraction-review-report-0.2.0.json"
-)
+REPORT_PATH_V020 = REPO_ROOT / "data" / "evaluation" / "skill-extraction-review-report-0.2.0.json"
 TAXONOMY_PATH = REPO_ROOT / "data" / "taxonomy" / "technical-skills-0.1.0.json"
 
 # ---------------------------------------------------------------------------
@@ -237,12 +232,8 @@ def load_taxonomy_info(path: Path = TAXONOMY_PATH) -> TaxonomyInfo:
         skills=tuple(skills),
         categories=tuple(sorted(categories)),
         category_labels=dict(CATEGORY_LABELS),
-        excluded_terms={k: _string(v) for k, v in excluded.items()}
-        if isinstance(excluded, dict)
-        else {},
-        rules={k: _string(v) for k, v in rules_raw.items()}
-        if isinstance(rules_raw, dict)
-        else {},
+        excluded_terms={k: _string(v) for k, v in excluded.items()} if isinstance(excluded, dict) else {},
+        rules={k: _string(v) for k, v in rules_raw.items()} if isinstance(rules_raw, dict) else {},
     )
 
 
@@ -287,7 +278,7 @@ class JobRecord:
     evidence: tuple[EvidenceEntry, ...]
 
     @classmethod
-    def from_dict(cls, record: Mapping[str, Any]) -> "JobRecord":
+    def from_dict(cls, record: Mapping[str, Any]) -> JobRecord:
         evidence_raw = record.get("skill_evidence")
         evidence_map = evidence_raw if isinstance(evidence_raw, dict) else {}
         skills_raw = evidence_map.get("skills") or []
@@ -414,20 +405,12 @@ class DemoDataset:
 
 def load_dataset(path: Path = DATASET_PATH) -> DemoDataset:
     doc = _mapping(_read_json(path), "dataset")
-    records = tuple(
-        JobRecord.from_dict(record)
-        for record in doc.get("records", [])
-        if isinstance(record, dict)
-    )
+    records = tuple(JobRecord.from_dict(record) for record in doc.get("records", []) if isinstance(record, dict))
     return DemoDataset(
         records=records,
         sample=doc.get("sample") if isinstance(doc.get("sample"), dict) else {},
-        capture_identity=(
-            doc.get("capture_identity") if isinstance(doc.get("capture_identity"), dict) else {}
-        ),
-        quality_report=(
-            doc.get("quality_report") if isinstance(doc.get("quality_report"), dict) else {}
-        ),
+        capture_identity=(doc.get("capture_identity") if isinstance(doc.get("capture_identity"), dict) else {}),
+        quality_report=(doc.get("quality_report") if isinstance(doc.get("quality_report"), dict) else {}),
         dataset_version=_string(doc.get("dataset_version")),
         matcher_version=_string(doc.get("matcher_version")),
         dataset_kind=_string(doc.get("dataset_kind")),
@@ -575,12 +558,8 @@ def load_review(path: Path = REVIEW_PATH) -> ReviewSet:
         taxonomy_version=_string(doc.get("taxonomy_version")),
         human_review_complete=doc.get("human_review_complete") is True,
         approval=doc.get("approval") if isinstance(doc.get("approval"), dict) else {},
-        previous_artifact=(
-            doc.get("previous_artifact") if isinstance(doc.get("previous_artifact"), dict) else {}
-        ),
-        human_review_decisions=tuple(
-            item for item in decisions if isinstance(item, dict)
-        ),
+        previous_artifact=(doc.get("previous_artifact") if isinstance(doc.get("previous_artifact"), dict) else {}),
+        human_review_decisions=tuple(item for item in decisions if isinstance(item, dict)),
     )
 
 
@@ -716,16 +695,10 @@ def load_report(path: Path = REPORT_PATH) -> ReviewReport:
         human_review_required=doc.get("human_review_required") is True,
         label_distribution=doc.get("label_distribution", {}),
         metrics=metrics if isinstance(metrics, dict) else {},
-        false_positives=tuple(
-            entry for entry in doc.get("false_positives", []) if isinstance(entry, dict)
-        ),
-        false_negatives=tuple(
-            entry for entry in doc.get("false_negatives", []) if isinstance(entry, dict)
-        ),
+        false_positives=tuple(entry for entry in doc.get("false_positives", []) if isinstance(entry, dict)),
+        false_negatives=tuple(entry for entry in doc.get("false_negatives", []) if isinstance(entry, dict)),
         human_queue=tuple(
-            entry
-            for entry in doc.get("human_review_queue", {}).get("items", [])
-            if isinstance(entry, dict)
+            entry for entry in doc.get("human_review_queue", {}).get("items", []) if isinstance(entry, dict)
         ),
         first_vs_second=doc.get("first_vs_second", {}),
         uncertainty=doc.get("uncertainty", {}),
@@ -740,12 +713,8 @@ def load_report(path: Path = REPORT_PATH) -> ReviewReport:
         taxonomy_version=_string(doc.get("taxonomy_version")),
         human_review_complete=doc.get("human_review_complete") is True,
         approval=doc.get("approval") if isinstance(doc.get("approval"), dict) else {},
-        previous_artifact=(
-            doc.get("previous_artifact") if isinstance(doc.get("previous_artifact"), dict) else {}
-        ),
-        human_review_decisions=tuple(
-            item for item in decisions if isinstance(item, dict)
-        ),
+        previous_artifact=(doc.get("previous_artifact") if isinstance(doc.get("previous_artifact"), dict) else {}),
+        human_review_decisions=tuple(item for item in decisions if isinstance(item, dict)),
         historical=historical if isinstance(historical, dict) else {},
     )
 
@@ -894,7 +863,8 @@ def validate_bundle(bundle: DemoBundle) -> None:
     )
     check(
         (sample.get("page"), sample.get("limit"), sample.get("offset")) == (1, 20, 0),
-        f"sample shape page/limit/offset {sample.get('page')!r}/{sample.get('limit')!r}/{sample.get('offset')!r} != 1/20/0",
+        "sample shape page/limit/offset "
+        f"{sample.get('page')!r}/{sample.get('limit')!r}/{sample.get('offset')!r} != 1/20/0",
     )
 
     check(
@@ -916,8 +886,7 @@ def validate_bundle(bundle: DemoBundle) -> None:
         "human_review_complete is not true on both review and report",
     )
     check(
-        rv.annotation_status not in FORBIDDEN_FINAL_STATUSES
-        and rp.annotation_status not in FORBIDDEN_FINAL_STATUSES,
+        rv.annotation_status not in FORBIDDEN_FINAL_STATUSES and rp.annotation_status not in FORBIDDEN_FINAL_STATUSES,
         "artifact claims an incompatible review status",
     )
     check(
@@ -940,8 +909,7 @@ def validate_bundle(bundle: DemoBundle) -> None:
         f"review/report snapshot {rv.snapshot_id!r}/{rp.snapshot_id!r} != {EXPECTED_SNAPSHOT_ID!r}",
     )
     check(
-        rv.taxonomy_version == EXPECTED_TAXONOMY_VERSION
-        and rp.taxonomy_version == EXPECTED_TAXONOMY_VERSION,
+        rv.taxonomy_version == EXPECTED_TAXONOMY_VERSION and rp.taxonomy_version == EXPECTED_TAXONOMY_VERSION,
         "review/report taxonomy_version does not match the pinned taxonomy",
     )
     check(
@@ -991,15 +959,10 @@ def validate_bundle(bundle: DemoBundle) -> None:
         check(actual == expected, f"metric {key} is {actual!r}, expected {expected!r}")
 
     if problems:
-        raise DemoDataError(
-            "demo artifacts are not the pinned final curated state: "
-            + "; ".join(problems)
-        )
+        raise DemoDataError("demo artifacts are not the pinned final curated state: " + "; ".join(problems))
 
 
-def load_demo_bundle(
-    root: Path = REPO_ROOT, paths: Mapping[str, Path] | None = None
-) -> DemoBundle:
+def load_demo_bundle(root: Path = REPO_ROOT, paths: Mapping[str, Path] | None = None) -> DemoBundle:
     """Carga, normaliza y valida los cinco artefactos demo.
 
     ``root`` permite que las pruebas y la app apunten explícitamente a la raíz del

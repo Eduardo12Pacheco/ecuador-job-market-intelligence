@@ -30,8 +30,9 @@ from __future__ import annotations
 
 import json
 from collections import Counter
-from datetime import datetime, timezone
-from typing import Any, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime
+from typing import Any
 
 from ..ingestion.models import CanonicalJob
 from .matcher import SEARCHED_FIELDS, JobSkillResult, field_text
@@ -58,7 +59,7 @@ def _manifest_captured_at(manifest: Mapping[str, Any]) -> datetime | None:
         value = datetime.fromisoformat(str(raw))
     except (TypeError, ValueError):
         return None
-    return value.astimezone(timezone.utc) if value.tzinfo is not None else value
+    return value.astimezone(UTC) if value.tzinfo is not None else value
 
 
 def build_quality_report(
@@ -96,7 +97,7 @@ def build_quality_report(
     per_skill: dict[str, int] = {skill.skill_id: 0 for skill in taxonomy.skills}
     records_with_evidence = 0
     no_evidence_ids: list[str] = []
-    for job, result in zip(job_list, result_list):
+    for job, result in zip(job_list, result_list, strict=True):
         if result.evidence_status == "matched":
             records_with_evidence += 1
             for skill_id in result.skills:
@@ -117,7 +118,7 @@ def build_quality_report(
         except (TypeError, ValueError):
             parsed = None
         if parsed is not None and parsed.tzinfo is not None:
-            updated_at_utc = parsed.astimezone(timezone.utc)
+            updated_at_utc = parsed.astimezone(UTC)
     if captured_at is not None and updated_at_utc is not None:
         age = (captured_at - updated_at_utc).total_seconds()
     else:
@@ -132,10 +133,7 @@ def build_quality_report(
             "duplicate_source_ids": sorted(duplicate_ids),
         },
         "observation_status_counts": {
-            status: count
-            for status, count in sorted(
-                Counter(job.observation_status.value for job in job_list).items()
-            )
+            status: count for status, count in sorted(Counter(job.observation_status.value for job in job_list).items())
         },
         "skill_coverage": {
             "taxonomy_version": taxonomy.version,

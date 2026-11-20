@@ -78,7 +78,7 @@ def main() -> int:
     legend_y = bar_top + bar_h + 28
     legend = ""
     lx = bar_x
-    for count, label, name, color in segments:
+    for count, label, _name, color in segments:
         legend += (
             f'<rect x="{lx}" y="{legend_y - 10}" width="12" height="12" fill="{color}"/>'
             f'<text x="{lx + 17}" y="{legend_y}" font-family="sans-serif" font-size="11" '
@@ -134,10 +134,10 @@ def main() -> int:
     }
 
     svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{HEIGHT}" viewBox="0 0 {WIDTH} {HEIGHT}"><rect width="{WIDTH}" height="{HEIGHT}" fill="#ffffff"/><title>Evaluacion final de extraccion de habilidades - muestra curada de 20 ofertas</title><text x="20" y="24" font-family="sans-serif" font-size="16" font-weight="bold" fill="#111827">Evaluacion final de extraccion de habilidades - muestra curada de 20 ofertas</text><text x="20" y="42" font-family="sans-serif" font-size="11" fill="#4b5563">auditoria completa de 740 pares (20 ofertas x 37 habilidades) adjudicada por humanos; micro = pares</text>
-{''.join(seg_marks)}
+{"".join(seg_marks)}
 <text x="{bar_x}" y="{bar_top - 8}" font-family="sans-serif" font-size="11" fill="#374151">740 pares auditados (TP + FP + FN + TN)</text>
 {legend}
-<text x="{bar_x}" y="{legend_y + 26}" font-family="sans-serif" font-size="10.5" fill="#6b7280">distribucion final: {distribution['supported']} supported | {distribution['not_supported']} not_supported | {distribution['uncertain']} uncertain</text>
+<text x="{bar_x}" y="{legend_y + 26}" font-family="sans-serif" font-size="10.5" fill="#6b7280">distribucion final: {distribution["supported"]} supported | {distribution["not_supported"]} not_supported | {distribution["uncertain"]} uncertain</text>
 {metric_row(118, "Precision (micro)", f"{fmt(precision)}", f"TP/(TP+FP) = {tp}/{tp + fp}")}
 {metric_row(186, "Recall (micro)", fmt(recall), f"TP/(TP+FN) = {tp}/{tp + fn} - propiedad de la muestra curada")}
 {metric_row(254, "F1 (micro)", fmt(f1), "2*P*R/(P+R) sobre los 740 pares")}

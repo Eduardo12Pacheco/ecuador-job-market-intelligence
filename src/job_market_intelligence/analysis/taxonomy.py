@@ -163,9 +163,7 @@ def taxonomy_from_dict(doc: dict) -> Taxonomy:
     version = _require_string(doc, "version", "'version'")
 
     categories_raw = doc.get("categories", [])
-    if not isinstance(categories_raw, list) or not all(
-        isinstance(cat, str) and cat.strip() for cat in categories_raw
-    ):
+    if not isinstance(categories_raw, list) or not all(isinstance(cat, str) and cat.strip() for cat in categories_raw):
         raise TaxonomyError("'categories' debe ser una lista no vacía de cadenas no vacías")
     categories = tuple(categories_raw)
 
@@ -197,8 +195,7 @@ def taxonomy_from_dict(doc: dict) -> Taxonomy:
         keywords_raw = entry.get("keywords")
         if not isinstance(keywords_raw, list) or not keywords_raw:
             raise TaxonomyError(
-                f"habilidad {skill_id!r}: 'keywords' debe ser una lista no vacía "
-                "(términos canónicos de búsqueda)"
+                f"habilidad {skill_id!r}: 'keywords' debe ser una lista no vacía (términos canónicos de búsqueda)"
             )
         aliases_raw = entry.get("aliases")
         if not isinstance(aliases_raw, list):
@@ -206,7 +203,6 @@ def taxonomy_from_dict(doc: dict) -> Taxonomy:
                 f"habilidad {skill_id!r}: 'aliases' debe ser una lista (puede estar vacía); "
                 "deben declararse tanto 'keywords' como 'aliases'"
             )
-        terms: list[str] = []
         for term in (*keywords_raw, *aliases_raw):
             if not isinstance(term, str) or not term.strip():
                 raise TaxonomyError(f"habilidad {skill_id!r}: keywords/aliases deben ser cadenas no vacías")
