@@ -14,10 +14,16 @@ hace las veces de captura en vivo en estas pruebas; nunca se toca la red.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from collections import Counter
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from conftest import (
+    BROWSE_ENDPOINT,
+    BROWSE_SAMPLE_JSON,
+    default_job,
+)
 
 from job_market_intelligence.analysis.dataset import (
     DATASET_KIND,
@@ -35,14 +41,9 @@ from job_market_intelligence.analysis.taxonomy import (
 )
 from job_market_intelligence.ingestion.parser import parse_job, parse_page
 
-from conftest import (
-    BROWSE_ENDPOINT,
-    BROWSE_SAMPLE_JSON,
-    default_job,
-)
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_PATH = REPO_ROOT / TAXONOMY_ARTIFACT_DEFAULT_PATH
+DEVELOPMENT_DATASET_PATH = REPO_ROOT / "data" / "analytics" / "development-sample-0.1.0.json"
 
 CAPTURED_AT_ISO = "2026-08-02T17:03:28.193510+00:00"
 UPDATED_AT_UTC_ISO = "2026-08-02T05:48:40+00:00"
@@ -144,9 +145,7 @@ class TestCanonicalFieldPreservation:
             excerpt="We need python skills",
         )[0]
         taxonomy = load_taxonomy(ARTIFACT_PATH)
-        dataset = build_development_dataset(
-            (job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy
-        )
+        dataset = build_development_dataset((job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy)
         record = dataset["records"][0]
         assert set(record) == CANONICAL_FIELDS | {"skill_evidence"}
         assert record["canonical_id"] == job.canonical_id
@@ -167,7 +166,7 @@ class TestCanonicalFieldPreservation:
         taxonomy = load_taxonomy(ARTIFACT_PATH)
         dataset = build_development_dataset(jobs, manifest=sample_manifest(), taxonomy=taxonomy)
         assert len(dataset["records"]) == 20
-        for record, raw in zip(dataset["records"], payload["jobs"]):
+        for record, raw in zip(dataset["records"], payload["jobs"], strict=True):
             assert record["title_raw"] == raw["title"]
             assert record["company_raw"] == raw["companyName"]
             assert record["description_html_raw"] == raw["description"]
@@ -179,9 +178,7 @@ class TestCanonicalFieldPreservation:
     def test_snapshot_id_preserved_through_projection(self) -> None:
         job = one_job()[0]
         taxonomy = load_taxonomy(ARTIFACT_PATH)
-        dataset = build_development_dataset(
-            (job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy
-        )
+        dataset = build_development_dataset((job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy)
         assert dataset["records"][0]["snapshot_id"] == "snap-fixed"
 
 
@@ -241,9 +238,7 @@ class TestSampleMetadata:
         jobs = parsed_jobs_from_fixture()
         taxonomy = load_taxonomy(ARTIFACT_PATH)
         with pytest.raises(DatasetError, match="complete"):
-            build_development_dataset(
-                jobs, manifest=sample_manifest(complete=True), taxonomy=taxonomy
-            )
+            build_development_dataset(jobs, manifest=sample_manifest(complete=True), taxonomy=taxonomy)
 
     def test_capture_identity_from_manifest(self) -> None:
         jobs = parsed_jobs_from_fixture()
@@ -273,9 +268,7 @@ class TestSkillEvidence:
     def test_no_match_record_is_explicit_no_evidence(self) -> None:
         job = one_job(title="Bilingual Writer", description="<p>Editing and proofreading</p>")[0]
         taxonomy = load_taxonomy(ARTIFACT_PATH)
-        dataset = build_development_dataset(
-            (job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy
-        )
+        dataset = build_development_dataset((job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy)
         evidence = dataset["records"][0]["skill_evidence"]
         assert evidence["evidence_status"] == "no_evidence"
         assert evidence["skills"] == []
@@ -284,9 +277,7 @@ class TestSkillEvidence:
     def test_matched_record_evidence_structure(self) -> None:
         job = one_job(title="ML Engineer", description="<p>Python and PyTorch</p>")[0]
         taxonomy = load_taxonomy(ARTIFACT_PATH)
-        dataset = build_development_dataset(
-            (job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy
-        )
+        dataset = build_development_dataset((job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy)
         evidence = dataset["records"][0]["skill_evidence"]
         assert evidence["evidence_status"] == "matched"
         assert "skill.python" in evidence["skills"]
@@ -307,9 +298,7 @@ class TestSkillEvidence:
     def test_missing_fields_skipped_and_reported(self) -> None:
         job = one_job(excerpt=None, description="<p>Python</p>")[0]
         taxonomy = load_taxonomy(ARTIFACT_PATH)
-        dataset = build_development_dataset(
-            (job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy
-        )
+        dataset = build_development_dataset((job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy)
         evidence = dataset["records"][0]["skill_evidence"]
         assert "excerpt_raw" in evidence["skipped_fields"]
         assert "excerpt_raw" not in evidence["searched_fields"]
@@ -317,9 +306,7 @@ class TestSkillEvidence:
     def test_raw_description_unchanged_while_matching_used_visible_text(self) -> None:
         job = one_job(description="<p>We need <strong>Python</strong> skills</p>")[0]
         taxonomy = load_taxonomy(ARTIFACT_PATH)
-        dataset = build_development_dataset(
-            (job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy
-        )
+        dataset = build_development_dataset((job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy)
         record = dataset["records"][0]
         assert record["description_html_raw"] == "<p>We need <strong>Python</strong> skills</p>"
         assert record["skill_evidence"]["evidence_status"] == "matched"
@@ -361,13 +348,11 @@ class TestDeterminismAndVersioning:
         job = parse_job(
             default_job(0, 0),
             snapshot_id="snap-fixed",
-            captured_at=datetime(2026, 8, 1, 10, 0, 0, tzinfo=timezone.utc),  # ≠ captured_at del manifiesto
+            captured_at=datetime(2026, 8, 1, 10, 0, 0, tzinfo=UTC),  # ≠ captured_at del manifiesto
         )
         taxonomy = load_taxonomy(ARTIFACT_PATH)
         with pytest.raises(DatasetIntegrityError, match="captured_at"):
-            build_development_dataset(
-                (job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy
-            )
+            build_development_dataset((job,), manifest=sample_manifest(returned_jobs=1), taxonomy=taxonomy)
 
     def test_naive_manifest_captured_at_rejected(self) -> None:
         job = one_job()[0]
@@ -385,6 +370,16 @@ class TestDeterminismAndVersioning:
             build_development_dataset((job,), manifest=manifest, taxonomy=taxonomy)
 
 
+class TestCommittedDevelopmentSample:
+    def test_location_scope_distribution(self) -> None:
+        dataset = json.loads(DEVELOPMENT_DATASET_PATH.read_text(encoding="utf-8"))
+        counts = Counter(record["location_scope"] for record in dataset["records"])
+        assert counts["worldwide"] == 12
+        assert counts["other_country"] == 8
+        assert counts["explicit_ec"] == 0
+        assert sum(counts.values()) == len(dataset["records"]) == 20
+
+
 class TestConstants:
     def test_dataset_version_and_kind(self) -> None:
         assert DATASET_VERSION == "0.1.0"
@@ -398,4 +393,4 @@ class TestConstants:
             for key in ("first_seen_at", "last_seen_at"):
                 value = datetime.fromisoformat(record[key])
                 assert value.tzinfo is not None
-                assert value.utcoffset() == timezone.utc.utcoffset(None)
+                assert value.utcoffset() == UTC.utcoffset(None)
