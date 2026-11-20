@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import UTC
 from pathlib import Path
 
 import httpx
@@ -53,8 +52,6 @@ from job_market_intelligence.ingestion.storage import (
     LocalCaptureStore,
     OverwriteError,
 )
-
-UTC = UTC
 
 # Contrato de ruta determinista compartido con test_storage.py: componente de
 # endpoint legible + sha256(endpoint)[:12] estable + offset rellenado con ceros.

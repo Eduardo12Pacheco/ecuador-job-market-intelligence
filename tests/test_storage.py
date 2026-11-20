@@ -32,8 +32,6 @@ from job_market_intelligence.ingestion.storage import (
     StorageError,
 )
 
-UTC = UTC
-
 # Contrato de ruta determinista: componente de endpoint legible + hash de endpoint
 # estable + offset rellenado con ceros. El hash es sha256(endpoint)[:12].
 BROWSE_ENDPOINT_HASH = "6b8244a52a80"
