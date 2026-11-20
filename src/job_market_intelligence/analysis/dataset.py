@@ -38,8 +38,9 @@ de datos y el informe describan siempre los mismos bytes.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
-from typing import Any, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime
+from typing import Any
 
 from ..ingestion.models import CanonicalJob
 from .errors import DatasetError, DatasetIntegrityError
@@ -76,7 +77,7 @@ _REQUIRED_MANIFEST_KEYS = (
 
 
 def _utc_iso(value: datetime) -> str:
-    return value.astimezone(timezone.utc).isoformat()
+    return value.astimezone(UTC).isoformat()
 
 
 def resolve_snapshot_id(manifest: Mapping[str, Any], snapshot_id: str | None = None) -> tuple[str, str]:
@@ -107,14 +108,15 @@ def _manifest_captured_at(manifest: Mapping[str, Any]) -> datetime:
         raise DatasetIntegrityError(f"el 'captured_at' del manifiesto no es ISO 8601: {raw!r}") from exc
     if captured_at.tzinfo is None:
         raise DatasetIntegrityError(
-            f"el 'captured_at' del manifiesto es timezone-naive (ingenuo en zona horaria): {raw!r}; se rechaza adivinar una zona"
+            "el 'captured_at' del manifiesto es timezone-naive (ingenuo en zona horaria): "
+            f"{raw!r}; se rechaza adivinar una zona"
         )
-    return captured_at.astimezone(timezone.utc)
+    return captured_at.astimezone(UTC)
 
 
 def _check_capture_clock(jobs: Sequence[CanonicalJob], captured_at: datetime) -> None:
     for job in jobs:
-        if job.first_seen_at.astimezone(timezone.utc) != captured_at:
+        if job.first_seen_at.astimezone(UTC) != captured_at:
             raise DatasetIntegrityError(
                 "el first_seen_at del empleo canónico no coincide con el captured_at del manifiesto; "
                 "la proyección debe parsearse con el momento de captura persistido"
@@ -205,7 +207,7 @@ def build_development_dataset(
         )
 
     results = [match_job(job, taxonomy) for job in jobs]
-    records = [_record_dict(job, result) for job, result in zip(jobs, results)]
+    records = [_record_dict(job, result) for job, result in zip(jobs, results, strict=True)]
 
     limit = manifest["limit"]
     offset = manifest["offset"]
@@ -254,15 +256,11 @@ def build_development_dataset(
             ],
         },
         "records": records,
-        "quality_report": build_quality_report(
-            list(jobs), results, manifest=manifest, taxonomy=taxonomy
-        ),
+        "quality_report": build_quality_report(list(jobs), results, manifest=manifest, taxonomy=taxonomy),
     }
     return dataset
 
 
 def serialize_dataset(dataset: dict) -> bytes:
     """Serialización JSON determinista en UTF-8 (claves ordenadas, sangría de 2 espacios, salto de línea final)."""
-    return (
-        json.dumps(dataset, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
-    ).encode("utf-8")
+    return (json.dumps(dataset, ensure_ascii=True, indent=2, sort_keys=True) + "\n").encode("utf-8")

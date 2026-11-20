@@ -1,25 +1,25 @@
 """Comando offline: materializa la revisión determinista de segunda pasada.
 
-    ``materialize_second_pass_review`` lee el conjunto de datos analítico EXISTENTE
-    (``data/analytics/development-sample-0.1.0.json``), el artefacto de taxonomía
-    versionado y el artefacto de evaluación del primer borrador
-    (``data/evaluation/skill-extraction-development-0.1.0.json``), construye las
-    etiquetas independientes de la segunda pasada a partir del manifiesto de
-    adjudicación curado (``analysis/second_pass.py`` — las predicciones del matcher
-    nunca se consultan al etiquetar), valida el contrato completo de revisión
-    20 x 37, compara la segunda pasada contra el primer borrador y contra las
-    predicciones embebidas de la línea base de palabras clave del conjunto de datos,
-    y escribe los dos artefactos deterministas:
+``materialize_second_pass_review`` lee el conjunto de datos analítico EXISTENTE
+(``data/analytics/development-sample-0.1.0.json``), el artefacto de taxonomía
+versionado y el artefacto de evaluación del primer borrador
+(``data/evaluation/skill-extraction-development-0.1.0.json``), construye las
+etiquetas independientes de la segunda pasada a partir del manifiesto de
+adjudicación curado (``analysis/second_pass.py`` — las predicciones del matcher
+nunca se consultan al etiquetar), valida el contrato completo de revisión
+20 x 37, compara la segunda pasada contra el primer borrador y contra las
+predicciones embebidas de la línea base de palabras clave del conjunto de datos,
+y escribe los dos artefactos deterministas:
 
-        data/evaluation/skill-extraction-review-0.2.0.json
-        data/evaluation/skill-extraction-review-report-0.2.0.json
+    data/evaluation/skill-extraction-review-0.2.0.json
+    data/evaluation/skill-extraction-review-report-0.2.0.json
 
-    Ambos artefactos declaran ``annotation_status: draft_second_pass`` y
-    ``human_review_required: true``; NO son gold y NO están revisados por humanos.
-    La generación es determinista y de cierre ante fallos: un artefacto existente
-    con contenido diferente se rechaza (nunca se sobrescribe), y no se consultan
-    páginas crudas, manifiestos, respuestas de API ni red. No se lee ningún reloj
-    de pared.
+Ambos artefactos declaran ``annotation_status: draft_second_pass`` y
+``human_review_required: true``; NO son gold y NO están revisados por humanos.
+La generación es determinista y de cierre ante fallos: un artefacto existente
+con contenido diferente se rechaza (nunca se sobrescribe), y no se consultan
+páginas crudas, manifiestos, respuestas de API ni red. No se lee ningún reloj
+de pared.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ import argparse
 import json
 from pathlib import Path
 
-from .errors import DatasetError, EvaluationError
+from .errors import DatasetError
 from .evaluate import _write_atomic
 from .evaluation import EVALUATION_ARTIFACT_DEFAULT_PATH, load_evaluation
 from .second_pass import (
@@ -74,7 +74,7 @@ def materialize_second_pass_review(
     contrato de revisión es inválido (incluida cualquier afirmación de gold o
     revisión humana) y :class:`DatasetError` cuando una salida cambiaría el
     contenido existente.
-"""
+    """
     dataset = _read_json(dataset_path, DatasetError, "dataset")
     taxonomy = load_taxonomy(taxonomy_path)
     first_pass = load_evaluation(first_pass_path)  # validates draft_evaluation status
@@ -97,7 +97,8 @@ def main(argv: list[str] | None = None) -> int:
         description=(
             "Materializa la revisión determinista de etiquetas de habilidades de segunda "
             "pasada para la muestra de desarrollo (conjunto de datos + taxonomía + evaluación "
-            "del primer borrador). Totalmente offline y determinista; el artefacto es draft_second_pass con human_review_required: true."
+            "del primer borrador). Totalmente offline y determinista; el artefacto es "
+            "draft_second_pass con human_review_required: true."
         )
     )
     parser.add_argument("--dataset", default=DEFAULT_DATASET_PATH, help="ruta del JSON del conjunto de datos analítico")

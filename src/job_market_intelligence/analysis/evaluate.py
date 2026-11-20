@@ -35,7 +35,6 @@ from .evaluation import (
     REPORT_ARTIFACT_DEFAULT_PATH,
     build_report,
     evaluation_from_dict,
-    load_evaluation,
     serialize_evaluation,
     serialize_report,
 )
@@ -111,7 +110,8 @@ def materialize_evaluation_report(
     if raw_text != canonical:
         raise EvaluationError(
             f"el artefacto de evaluación {evaluation_path} no está serializado canónicamente; el "
-            f"artefacto de borrador debe ser reproducible (claves ordenadas, sangría de 2 espacios, salto de línea final)"
+            "artefacto de borrador debe ser reproducible (claves ordenadas, sangría de 2 espacios, "
+            "salto de línea final)"
         )
 
     evaluation = evaluation_from_dict(doc)

@@ -28,17 +28,18 @@ anotación es la fecha fija del repositorio ``2026-08-02``.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from .errors import EvaluationError
 from .evaluation import (
     ANNOTATION_DATE,
     DATASET_TYPE,
+    LABEL_VALUES,
     SNAPSHOT_ID,
     Evidence,
-    LABEL_VALUES,
     _matcher_evidence,
     _parse_evidence,
     _parse_sample,
@@ -240,7 +241,9 @@ _ADJUDICATION: dict[tuple[str, str], dict] = {
         "equivalent practical experience'), not as a skill the role performs.",
         "Decide whether a degree-field mention under preferred qualifications counts as "
         "explicit evidence of the data-science skill (supported) or not (not_supported).",
-        notes="Degree-field mention; the matcher predicted skill.data_science here. First draft left this pair unlabeled.",
+        notes=(
+            "Degree-field mention; the matcher predicted skill.data_science here. First draft left this pair unlabeled."
+        ),
     ),
     ("data-tools", "skill.ai"): _ns(
         "Negative-requirement case: the posting explicitly says 'No prior experience in AI is "
@@ -413,8 +416,7 @@ _ADJUDICATION: dict[tuple[str, str], dict] = {
     ),
     ("fullstack", "skill.sso"): _sup(
         [("description_html_raw", "SSO/SAML")],
-        "Explicitly required: 'enterprise authentication (SSO/SAML)' and 'SSO/SAML, role-based "
-        "access control (RBAC)'.",
+        "Explicitly required: 'enterprise authentication (SSO/SAML)' and 'SSO/SAML, role-based access control (RBAC)'.",
     ),
     ("fullstack", "skill.rbac"): _sup(
         [("description_html_raw", "role-based access control (RBAC)")],
@@ -477,8 +479,7 @@ _ADJUDICATION: dict[tuple[str, str], dict] = {
     ),
     ("founding-mts", "skill.python"): _sup(
         [("description_html_raw", "production-quality Python")],
-        "Explicitly required: 'Write production-quality Python, build agentic workflows for "
-        "evidence investigation'.",
+        "Explicitly required: 'Write production-quality Python, build agentic workflows for evidence investigation'.",
     ),
     ("founding-mts", "skill.machine_learning"): _sup(
         [("description_html_raw", "ML, statistics, and data science fundamentals")],
@@ -596,8 +597,7 @@ def annotate_second_pass(dataset: Mapping[str, Any], taxonomy: Taxonomy) -> tupl
     for short, skill_id in _ADJUDICATION:
         if skill_id not in known_skills:
             raise EvaluationError(
-                f"adjudication manifest references unknown taxonomy skill {skill_id!r} "
-                f"for record {short!r}"
+                f"adjudication manifest references unknown taxonomy skill {skill_id!r} for record {short!r}"
             )
 
     labels: list[SecondPassLabel] = []
@@ -664,8 +664,7 @@ SAMPLE_WARNING = "development_sample: 20 records, one page, complete: false; not
 SAMPLE_LIMITATIONS = [
     "development_sample: exactly 20 records from one bounded page (limit=20, offset=0) of one "
     "source (himalayas), snapshot cap_0370798f7af4b0e3, complete: false",
-    "not market coverage: one page of one job board is not a market snapshot and no whole-market "
-    "claim is made",
+    "not market coverage: one page of one job board is not a market snapshot and no whole-market claim is made",
 ]
 
 
@@ -755,14 +754,10 @@ def _parse_label(entry: Any) -> SecondPassLabel:
     skill_id = _require_string(entry, "skill_id", "label 'skill_id'")
     value = entry.get("label")
     if value not in LABEL_VALUES:
-        raise EvaluationError(
-            f"label must be one of {LABEL_VALUES}; got {value!r} for ({source_id}, {skill_id})"
-        )
+        raise EvaluationError(f"label must be one of {LABEL_VALUES}; got {value!r} for ({source_id}, {skill_id})")
     evidence = _parse_evidence(entry.get("evidence", []))
     if value == "supported" and not evidence:
-        raise EvaluationError(
-            f"supported label ({source_id}, {skill_id}) must carry at least one exact evidence entry"
-        )
+        raise EvaluationError(f"supported label ({source_id}, {skill_id}) must carry at least one exact evidence entry")
     if value == "not_supported" and evidence:
         raise EvaluationError(
             f"not_supported label ({source_id}, {skill_id}) must have empty evidence; "
@@ -770,14 +765,11 @@ def _parse_label(entry: Any) -> SecondPassLabel:
         )
     reviewed_raw = entry.get("reviewed_fields")
     if not isinstance(reviewed_raw, list) or not reviewed_raw:
-        raise EvaluationError(
-            f"label ({source_id}, {skill_id}) must declare non-empty reviewed_fields"
-        )
+        raise EvaluationError(f"label ({source_id}, {skill_id}) must declare non-empty reviewed_fields")
     for field in reviewed_raw:
         if not isinstance(field, str) or field not in REVIEWED_FIELDS:
             raise EvaluationError(
-                f"reviewed field {field!r} of ({source_id}, {skill_id}) must be one of "
-                f"{REVIEWED_FIELDS}"
+                f"reviewed field {field!r} of ({source_id}, {skill_id}) must be one of {REVIEWED_FIELDS}"
             )
     reviewed_fields = tuple(reviewed_raw)
     reason = _require_string(entry, "reason", f"label ({source_id}, {skill_id}) 'reason'")
@@ -792,8 +784,7 @@ def _parse_label(entry: Any) -> SecondPassLabel:
     else:
         if question_raw is not None:
             raise EvaluationError(
-                f"label ({source_id}, {skill_id}) is {value!r}; human_review_question is "
-                "reserved for uncertain labels"
+                f"label ({source_id}, {skill_id}) is {value!r}; human_review_question is reserved for uncertain labels"
             )
         question = None
     notes_raw = entry.get("notes")
@@ -813,9 +804,7 @@ def _parse_label(entry: Any) -> SecondPassLabel:
 def second_pass_from_dict(doc: Mapping[str, Any]) -> SecondPassSet:
     """Valida un artefacto de revisión de segunda pasada parseado (comprobaciones de esquema con cierre ante fallo)."""
     if not isinstance(doc, dict):
-        raise EvaluationError(
-            f"the second-pass review document must be a JSON object; got {type(doc).__name__}"
-        )
+        raise EvaluationError(f"the second-pass review document must be a JSON object; got {type(doc).__name__}")
     for key in _REQUIRED_METADATA:
         _require_string(doc, key, f"'{key}'")
     if doc["evaluation_version"] != REVIEW_VERSION:
@@ -829,9 +818,7 @@ def second_pass_from_dict(doc: Mapping[str, Any]) -> SecondPassSet:
             f"{doc['annotation_status']!r}"
         )
     if doc.get("human_review_required") is not True:
-        raise EvaluationError(
-            "human_review_required must be true: this second-pass artifact requires human review"
-        )
+        raise EvaluationError("human_review_required must be true: this second-pass artifact requires human review")
     if "evaluation_status" in doc:
         status = doc["evaluation_status"]
         if status in FORBIDDEN_STATUS_VALUES:
@@ -845,8 +832,7 @@ def second_pass_from_dict(doc: Mapping[str, Any]) -> SecondPassSet:
         )
     if doc.get("human_reviewed"):
         raise EvaluationError(
-            "forbidden claim: 'human_reviewed' must not be truthy; the second pass is NOT "
-            "human-reviewed"
+            "forbidden claim: 'human_reviewed' must not be truthy; the second pass is NOT human-reviewed"
         )
     sample = _parse_sample(doc.get("sample"))
     warning = sample.get("warning")
@@ -957,9 +943,7 @@ def validate_second_pass(review: SecondPassSet, dataset: Mapping[str, Any], taxo
     if len(record_by_source) != len(records):
         raise EvaluationError("the dataset contains duplicate source ids; refusing to validate")
 
-    expected_pairs = {
-        (source_id, skill.skill_id) for source_id in record_by_source for skill in taxonomy.skills
-    }
+    expected_pairs = {(source_id, skill.skill_id) for source_id in record_by_source for skill in taxonomy.skills}
     actual_pairs = {(label.source_id, label.skill_id) for label in review.labels}
     if actual_pairs != expected_pairs:
         missing = sorted(expected_pairs - actual_pairs)
@@ -972,13 +956,10 @@ def validate_second_pass(review: SecondPassSet, dataset: Mapping[str, Any], taxo
     for entry in review.labels:
         record = record_by_source.get(entry.source_id)
         if record is None:
-            raise EvaluationError(
-                f"label source_id {entry.source_id!r} does not exist in the dataset records"
-            )
+            raise EvaluationError(f"label source_id {entry.source_id!r} does not exist in the dataset records")
         if taxonomy.skill_by_id(entry.skill_id) is None:
             raise EvaluationError(
-                f"label skill_id {entry.skill_id!r} does not exist in the taxonomy "
-                f"{taxonomy.version}"
+                f"label skill_id {entry.skill_id!r} does not exist in the taxonomy {taxonomy.version}"
             )
         for ev in entry.evidence:
             value = record.get(ev.field)
@@ -992,7 +973,7 @@ def validate_second_pass(review: SecondPassSet, dataset: Mapping[str, Any], taxo
                     f"evidence char_end {ev.char_end} exceeds the length of {ev.field} "
                     f"({len(value)}) in record {entry.source_id!r}"
                 )
-            actual = value[ev.char_start:ev.char_end]
+            actual = value[ev.char_start : ev.char_end]
             if actual != ev.exact_quote:
                 raise EvaluationError(
                     f"evidence quote mismatch in record {entry.source_id!r} for skill "
@@ -1006,9 +987,7 @@ def validate_second_pass(review: SecondPassSet, dataset: Mapping[str, Any], taxo
 # ---------------------------------------------------------------------------
 
 
-def compare_with_predictions(
-    second_pass: SecondPassSet, dataset: Mapping[str, Any], taxonomy: Taxonomy
-) -> dict:
+def compare_with_predictions(second_pass: SecondPassSet, dataset: Mapping[str, Any], taxonomy: Taxonomy) -> dict:
     """Contingencia a nivel de par de las etiquetas de la segunda pasada vs predicciones del matcher.
 
     Se ejecuta SOLO después de que existan las 740 etiquetas. Cada habilidad
@@ -1085,11 +1064,7 @@ def compare_with_predictions(
                 unlabeled_predicted_pairs += 1
 
     precision, recall, f1 = _precision_recall_f1(tp, fp, fn)
-    scope = sorted(
-        skill_id
-        for skill_id, counts in per_skill.items()
-        if sum(counts.values()) > 0
-    )
+    scope = sorted(skill_id for skill_id, counts in per_skill.items() if sum(counts.values()) > 0)
     per_skill_metrics: dict[str, dict] = {}
     defined: list[str] = []
     for skill_id in scope:
@@ -1349,7 +1324,7 @@ def build_second_pass_report(
         if label.label == "uncertain":
             uncertain_per_skill[label.skill_id] = uncertain_per_skill.get(label.skill_id, 0) + 1
     skills_highest_uncertainty = sorted(
-        ({ "skill_id": skill_id, "uncertain": count} for skill_id, count in uncertain_per_skill.items()),
+        ({"skill_id": skill_id, "uncertain": count} for skill_id, count in uncertain_per_skill.items()),
         key=lambda item: (-item["uncertain"], item["skill_id"]),
     )
 
@@ -1391,9 +1366,7 @@ def build_second_pass_report(
                 "least one non-uncertain labeled pair; skills with no defined value (all labels "
                 "not_supported) are excluded and listed explicitly"
             ),
-            "uncertain": (
-                "ambiguous mentions reported separately and excluded from every primary denominator"
-            ),
+            "uncertain": ("ambiguous mentions reported separately and excluded from every primary denominator"),
             "first_vs_second": (
                 "only pairs labeled in both passes are agreements/disagreements; first-draft "
                 "unlabeled pairs are counted separately and are never disagreements"
@@ -1429,13 +1402,9 @@ def build_second_pass_report(
             "labeled_pairs": len(second_pass.labels),
             "non_uncertain_labeled_pairs": cont["non_uncertain_labeled_pairs"],
             "total_pairs": len(records) * len(taxonomy.skills),
-            "pair_coverage": len(second_pass.labels) / (len(records) * len(taxonomy.skills))
-            if records
-            else None,
+            "pair_coverage": len(second_pass.labels) / (len(records) * len(taxonomy.skills)) if records else None,
             "non_uncertain_pair_coverage": (
-                cont["non_uncertain_labeled_pairs"] / (len(records) * len(taxonomy.skills))
-                if records
-                else None
+                cont["non_uncertain_labeled_pairs"] / (len(records) * len(taxonomy.skills)) if records else None
             ),
             "annotated_records": len(annotated_ids),
             "annotated_record_ids": annotated_ids,
@@ -1450,7 +1419,7 @@ def build_second_pass_report(
             "first_draft_unlabeled_pairs": comp["first_draft_unlabeled_pairs"],
             "note": comp["note"],
             "per_skill": comp["per_skill"],
-            "disagreements": comp["disagreement_list"],
+            "disagreement_list": comp["disagreement_list"],
         },
         "human_review_queue": comp["human_review_queue"],
         "uncertainty": {
@@ -1505,8 +1474,7 @@ def build_second_pass_report(
         "guardrails": [
             "labels are a draft second pass, not gold or human-reviewed; human review is required",
             "uncertain labels are excluded from all primary denominators and reported separately",
-            "unlabeled pairs are excluded from the metrics, never treated as false positives or "
-            "negatives",
+            "unlabeled pairs are excluded from the metrics, never treated as false positives or negatives",
             "not_supported means no explicit positive evidence in the reviewed fields, never that "
             "the person or job lacks the skill",
             "no market coverage: one page of one job board is not a market snapshot",

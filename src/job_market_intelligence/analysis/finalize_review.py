@@ -1,47 +1,49 @@
 """Comando offline: materializa la revisión final adjudicada por humanos (v0.3.0).
 
-    ``materialize_final_review`` lee el artefacto de revisión de segunda pasada
-    v0.2.0 CONGELADO (``data/evaluation/skill-extraction-review-0.2.0.json``), su informe
-    (``data/evaluation/skill-extraction-review-report-0.2.0.json``) y el conjunto de
-    datos analítico local (``data/analytics/development-sample-0.1.0.json``). Aplica
-    exactamente las siete decisiones humanas aprobadas (HR-01…HR-07) como un registro
-    de adjudicación separado, conserva sin cambios todas las demás etiquetas, recalcula
-    la distribución de etiquetas, la contingencia a nivel de par contra las predicciones
-    embebidas de la línea base de palabras clave del conjunto de datos y las métricas
-    micro/macro a partir de las 740 etiquetas resultantes, y escribe los dos artefactos
-    deterministas:
+``materialize_final_review`` lee el artefacto de revisión de segunda pasada
+v0.2.0 CONGELADO (``data/evaluation/skill-extraction-review-0.2.0.json``), su informe
+(``data/evaluation/skill-extraction-review-report-0.2.0.json``) y el conjunto de
+datos analítico local (``data/analytics/development-sample-0.1.0.json``). Aplica
+exactamente las siete decisiones humanas aprobadas (HR-01…HR-07) como un registro
+de adjudicación separado, conserva sin cambios todas las demás etiquetas, recalcula
+la distribución de etiquetas, la contingencia a nivel de par contra las predicciones
+embebidas de la línea base de palabras clave del conjunto de datos y las métricas
+micro/macro a partir de las 740 etiquetas resultantes, y escribe los dos artefactos
+deterministas:
 
-        data/evaluation/skill-extraction-review-0.3.0.json
-        data/evaluation/skill-extraction-review-report-0.3.0.json
+    data/evaluation/skill-extraction-review-0.3.0.json
+    data/evaluation/skill-extraction-review-report-0.3.0.json
 
-    Ambos artefactos declaran ``annotation_status: human_review_complete``,
-    ``human_review_required: false`` y ``human_review_complete: true``: la evaluación
-    es FINAL SOLO PARA ESTA MUESTRA CURADA DE 20 OFERTAS — su alcance se limita a esta
-    muestra curada y no puede generalizarse al mercado completo. La etiqueta original
-    de la segunda pasada, la evidencia, las citas/offsets exactos, la razón, la
-    pregunta, las notas y los ids de fuente se conservan para cada par; los siete
-    pares adjudicados llevan además un ``final_label`` y un ``adjudication_id`` que
-    enlaza con el libro ``human_review_decisions`` auditable. El registro histórico
-    v0.2.0 (distribución de etiquetas, métricas, comparación primera-vs-segunda y la
-    cola de revisión humana de 7 ítems) se conserva bajo el bloque ``historical`` del
-    informe; la redacción del alcance histórico se normaliza a ``reference label``
-    mientras el artefacto fuente v0.2.0 permanece intacto. La ``human_review_queue``
-    actual es ``count: 0, items: []``.
+Ambos artefactos declaran ``annotation_status: human_review_complete``,
+``human_review_required: false`` y ``human_review_complete: true``: la evaluación
+es FINAL SOLO PARA ESTA MUESTRA CURADA DE 20 OFERTAS — su alcance se limita a esta
+muestra curada y no puede generalizarse al mercado completo. La etiqueta original
+de la segunda pasada, la evidencia, las citas/offsets exactos, la razón, la
+pregunta, las notas y los ids de fuente se conservan para cada par; los siete
+pares adjudicados llevan además un ``final_label`` y un ``adjudication_id`` que
+enlaza con el libro ``human_review_decisions`` auditable. El registro histórico
+v0.2.0 (distribución de etiquetas, métricas, comparación primera-vs-segunda y la
+cola de revisión humana de 7 ítems) se conserva bajo el bloque ``historical`` del
+informe; la redacción del alcance histórico se normaliza a ``reference label``
+mientras el artefacto fuente v0.2.0 permanece intacto. La ``human_review_queue``
+actual es ``count: 0, items: []``.
 
-    La generación es determinista y de cierre ante fallos: los artefactos de entrada
-    deben estar serializados canónicamente, cada decisión debe resolverse al par
-    congelado v0.2.0 para el que fue aprobada, cada cita/offset de evidencia debe
-    re-verificarse contra el conjunto de datos y un artefacto de salida existente con
-    contenido diferente se rechaza (nunca se sobrescribe). No se consultan páginas
-    crudas, manifiestos, respuestas de API ni red, y no se lee ningún reloj de pared:
-    la fecha de aprobación es la fecha fija del repositorio ``2026-08-02``.
+La generación es determinista y de cierre ante fallos: los artefactos de entrada
+deben estar serializados canónicamente, cada decisión debe resolverse al par
+congelado v0.2.0 para el que fue aprobada, cada cita/offset de evidencia debe
+re-verificarse contra el conjunto de datos y un artefacto de salida existente con
+contenido diferente se rechaza (nunca se sobrescribe). No se consultan páginas
+crudas, manifiestos, respuestas de API ni red, y no se lee ningún reloj de pared:
+la fecha de aprobación es la fecha fija del repositorio ``2026-08-02``.
 """
+
 from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from .errors import DatasetError, EvaluationError
 from .evaluate import _write_atomic
@@ -94,9 +96,7 @@ HUMAN_DECISIONS: tuple[dict[str, Any], ...] = (
         "skill_id": "skill.ai",
         "expected_second_pass_label": "uncertain",
         "final_label": "not_supported",
-        "criterion": (
-            "AI only company/product context, role does not require or perform AI work."
-        ),
+        "criterion": ("AI only company/product context, role does not require or perform AI work."),
     },
     {
         "item_id": "HR-02",
@@ -104,10 +104,7 @@ HUMAN_DECISIONS: tuple[dict[str, Any], ...] = (
         "skill_id": "skill.ai",
         "expected_second_pass_label": "not_supported",
         "final_label": "not_supported",
-        "criterion": (
-            "posting says no prior AI experience required and AI is project context, "
-            "not role tasks."
-        ),
+        "criterion": ("posting says no prior AI experience required and AI is project context, not role tasks."),
     },
     {
         "item_id": "HR-03",
@@ -116,8 +113,7 @@ HUMAN_DECISIONS: tuple[dict[str, Any], ...] = (
         "expected_second_pass_label": "uncertain",
         "final_label": "not_supported",
         "criterion": (
-            "data science is only a possible university degree field, not evidence "
-            "the role executes data-science work."
+            "data science is only a possible university degree field, not evidence the role executes data-science work."
         ),
     },
     {
@@ -126,10 +122,7 @@ HUMAN_DECISIONS: tuple[dict[str, Any], ...] = (
         "skill_id": "skill.machine_learning",
         "expected_second_pass_label": "uncertain",
         "final_label": "not_supported",
-        "criterion": (
-            "recordings are later used by ML applications, but role does not "
-            "develop/apply ML."
-        ),
+        "criterion": ("recordings are later used by ML applications, but role does not develop/apply ML."),
     },
     {
         "item_id": "HR-05",
@@ -148,10 +141,7 @@ HUMAN_DECISIONS: tuple[dict[str, Any], ...] = (
         "skill_id": "skill.machine_learning",
         "expected_second_pass_label": "not_supported",
         "final_label": "not_supported",
-        "criterion": (
-            "AI models/training are mentioned, but no explicit ML work; AI and ML "
-            "are not interchangeable."
-        ),
+        "criterion": ("AI models/training are mentioned, but no explicit ML work; AI and ML are not interchangeable."),
     },
     {
         "item_id": "HR-07",
@@ -171,13 +161,36 @@ _DECISION_BY_PAIR = {(d["source_id"], d["skill_id"]): d for d in HUMAN_DECISIONS
 # Justificación exacta provista con las decisiones humanas aprobadas, conservada
 # en el libro junto al criterio normalizado que usa el materializador.
 DECISION_REASON_ES = {
-    "HR-01": "La IA aparece únicamente como contexto del producto de la empresa; el cargo no exige ni ejecuta trabajo de IA.",
-    "HR-02": "La oferta indica que no requiere experiencia previa en IA y la mención de IA pertenece al contexto del proyecto, no a las tareas del cargo.",
-    "HR-03": "data science aparece únicamente como campo posible de título universitario; no demuestra que el cargo ejecute tareas de Data Science.",
-    "HR-04": "Las grabaciones serán usadas posteriormente por aplicaciones de Machine Learning, pero el cargo no desarrolla ni aplica Machine Learning.",
-    "HR-05": "La oferta menciona explícitamente experiencia en recolección de datos para IA como una ventaja relacionada con el rol. Que sea opcional no significa que la actividad no exista.",
-    "HR-06": "Se mencionan AI models y AI training, pero no existe evidencia explícita de trabajo de Machine Learning. IA y Machine Learning no deben tratarse como etiquetas intercambiables.",
-    "HR-07": "La producción de muestras de audio para entrenamiento de IA está relacionada directamente con el rol. La categoría AI-Specialist solo refuerza la evidencia; no debe ser la única base de la decisión.",
+    "HR-01": (
+        "La IA aparece únicamente como contexto del producto de la empresa; el cargo no exige ni ejecuta trabajo de IA."
+    ),
+    "HR-02": (
+        "La oferta indica que no requiere experiencia previa en IA y la mención de IA "
+        "pertenece al contexto del proyecto, no a las tareas del cargo."
+    ),
+    "HR-03": (
+        "data science aparece únicamente como campo posible de título universitario; "
+        "no demuestra que el cargo ejecute tareas de Data Science."
+    ),
+    "HR-04": (
+        "Las grabaciones serán usadas posteriormente por aplicaciones de Machine Learning, "
+        "pero el cargo no desarrolla ni aplica Machine Learning."
+    ),
+    "HR-05": (
+        "La oferta menciona explícitamente experiencia en recolección de datos para IA "
+        "como una ventaja relacionada con el rol. Que sea opcional no significa que la "
+        "actividad no exista."
+    ),
+    "HR-06": (
+        "Se mencionan AI models y AI training, pero no existe evidencia explícita de "
+        "trabajo de Machine Learning. IA y Machine Learning no deben tratarse como "
+        "etiquetas intercambiables."
+    ),
+    "HR-07": (
+        "La producción de muestras de audio para entrenamiento de IA está relacionada "
+        "directamente con el rol. La categoría AI-Specialist solo refuerza la evidencia; "
+        "no debe ser la única base de la decisión."
+    ),
 }
 
 FINAL_ANNOTATION_METHOD = (
@@ -248,7 +261,7 @@ def _apply_decisions(labels: list[dict]) -> list[dict]:
 
     Cada etiqueta conserva sus campos originales y gana ``final_label`` (la etiqueta de
     registro); los siete pares adjudicados ganan además ``adjudication_id``.
-"""
+    """
     final_labels: list[dict] = []
     used: set[str] = set()
     for entry in labels:
@@ -275,9 +288,7 @@ def _apply_decisions(labels: list[dict]) -> list[dict]:
         final_labels.append(final)
     missing = [d["item_id"] for d in HUMAN_DECISIONS if d["item_id"] not in used]
     if missing:
-        raise EvaluationError(
-            f"las decisiones humanas no se aplicaron a las etiquetas congeladas: {sorted(missing)}"
-        )
+        raise EvaluationError(f"las decisiones humanas no se aplicaron a las etiquetas congeladas: {sorted(missing)}")
     return final_labels
 
 
@@ -286,13 +297,11 @@ def _build_decision_ledger(
     historical_queue_items: list[dict],
 ) -> list[dict]:
     """Libro auditable: una entrada por decisión aprobada, con todas las entradas conservadas."""
-    first_pass_by_pair = {
-        (item.get("source_id"), item.get("skill_id")): item for item in historical_queue_items
-    }
+    first_pass_by_pair = {(item.get("source_id"), item.get("skill_id")): item for item in historical_queue_items}
     ledger: list[dict] = []
     for decision in HUMAN_DECISIONS:
         pair = (decision["source_id"], decision["skill_id"])
-        label = next(l for l in labels if l["source_id"] == pair[0] and l["skill_id"] == pair[1])
+        label = next(entry for entry in labels if entry["source_id"] == pair[0] and entry["skill_id"] == pair[1])
         queue_item = first_pass_by_pair.get(pair, {})
         first_pass_label = queue_item.get("first_draft_label")
         ledger.append(
@@ -321,11 +330,9 @@ def _compute_contingency(final_labels: list[dict], dataset: Mapping[str, Any]) -
     """Contingencia a nivel de par de las etiquetas finales contra las predicciones del matcher (derivada)."""
     predictions = predictions_by_record(dataset)
     record_by_source = {
-        record.get("source_id"): record
-        for record in dataset.get("records", [])
-        if isinstance(record, dict)
+        record.get("source_id"): record for record in dataset.get("records", []) if isinstance(record, dict)
     }
-    labels_by_pair = {(l["source_id"], l["skill_id"]) for l in final_labels}
+    labels_by_pair = {(entry["source_id"], entry["skill_id"]) for entry in final_labels}
 
     tp = fp = fn = tn = uncertain = 0
     per_skill: dict[str, dict[str, int]] = {}
@@ -385,9 +392,7 @@ def _compute_contingency(final_labels: list[dict], dataset: Mapping[str, Any]) -
                 unlabeled_predicted_pairs += 1
 
     precision, recall, f1 = _precision_recall_f1(tp, fp, fn)
-    scope = sorted(
-        skill_id for skill_id, counts in per_skill.items() if sum(counts.values()) > 0
-    )
+    scope = sorted(skill_id for skill_id, counts in per_skill.items() if sum(counts.values()) > 0)
     per_skill_metrics: dict[str, dict] = {}
     defined: list[str] = []
     for skill_id in scope:
@@ -449,11 +454,9 @@ def build_final_doc(
     labels = _apply_decisions(list(review_doc.get("labels", [])))
     if len(labels) != 740:
         raise EvaluationError(f"la revisión final debe contener 740 etiquetas; se obtuvieron {len(labels)}")
-    _verify_evidence_quotes(labels, {
-        record.get("source_id"): record
-        for record in dataset.get("records", [])
-        if isinstance(record, dict)
-    })
+    _verify_evidence_quotes(
+        labels, {record.get("source_id"): record for record in dataset.get("records", []) if isinstance(record, dict)}
+    )
     queue = report_doc.get("human_review_queue") or {}
     ledger = _build_decision_ledger(labels, list(queue.get("items", [])))
     return {
@@ -726,8 +729,7 @@ def build_final_report(
         "guardrails": [
             "labels are final for this curated sample after approved human review; they do not "
             "generalize beyond these 20 offers",
-            "no current human-review queue: human_review_queue.count=0; the v0.2.0 queue is "
-            "preserved historically",
+            "no current human-review queue: human_review_queue.count=0; the v0.2.0 queue is preserved historically",
             "uncertain labels are excluded from all primary denominators and reported separately",
             "not_supported means no explicit positive evidence in the reviewed fields, never that "
             "the person or job lacks the skill",
@@ -751,7 +753,7 @@ def materialize_final_review(
     Totalmente offline y determinista. Eleva :class:`EvaluationError` cuando las
     entradas congeladas no son el estado fijado v0.2.0 (o alguna decisión no aplica)
     y :class:`DatasetError` cuando una salida cambiaría el contenido existente.
-"""
+    """
     review_doc = _read_json(review_path, EvaluationError, "v0.2.0 review artifact")
     report_doc = _read_json(report_path, EvaluationError, "v0.2.0 review report")
     dataset = _read_json(dataset_path, DatasetError, "dataset")
@@ -789,7 +791,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Materializa los artefactos de revisión final adjudicados por humanos (v0.3.0) desde la "
-            "revisión/informe congelados v0.2.0 y el conjunto de datos analítico local. Totalmente offline y determinista."
+            "revisión/informe congelados v0.2.0 y el conjunto de datos analítico local. "
+            "Totalmente offline y determinista."
         )
     )
     parser.add_argument(

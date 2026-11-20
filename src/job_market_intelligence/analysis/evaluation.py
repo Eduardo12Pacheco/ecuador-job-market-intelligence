@@ -1,4 +1,6 @@
-"""Evaluación de extracción de habilidades de borrador para la muestra de desarrollo (determinista y completamente offline).
+"""Evaluación de extracción de habilidades de borrador para la muestra de desarrollo.
+
+Determinista y completamente offline.
 
 Este módulo valida el artefacto de evaluación de borrador comprometido
 (``data/evaluation/skill-extraction-development-0.1.0.json``) contra el
@@ -50,9 +52,10 @@ Métricas:
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from .errors import EvaluationError
 from .taxonomy import Taxonomy
@@ -376,8 +379,7 @@ def validate_evaluation(evaluation: EvaluationSet, dataset: Mapping[str, Any], t
             )
         if taxonomy.skill_by_id(entry.skill_id) is None:
             raise EvaluationError(
-                f"el skill_id {entry.skill_id!r} de la etiqueta no existe en la taxonomía "
-                f"{taxonomy.version}"
+                f"el skill_id {entry.skill_id!r} de la etiqueta no existe en la taxonomía {taxonomy.version}"
             )
         for ev in entry.evidence:
             value = record.get(ev.field)
@@ -391,13 +393,15 @@ def validate_evaluation(evaluation: EvaluationSet, dataset: Mapping[str, Any], t
                     f"evidence char_end {ev.char_end} excede la longitud de {ev.field} "
                     f"({len(value)}) en el registro {entry.source_id!r}"
                 )
-            actual = value[ev.char_start:ev.char_end]
+            actual = value[ev.char_start : ev.char_end]
             if actual != ev.exact_quote:
                 raise EvaluationError(
                     f"desajuste de cita de evidencia en el registro {entry.source_id!r} para la habilidad "
                     f"{entry.skill_id!r}: {ev.field}[{ev.char_start}:{ev.char_end}] = {actual!r} "
                     f"pero la etiqueta registra {ev.exact_quote!r}"
                 )
+
+
 def predictions_by_record(dataset: Mapping[str, Any]) -> dict[str, tuple[str, ...]]:
     """Habilidades predichas únicas por registro (una habilidad cuenta como máximo una vez por registro)."""
     predictions: dict[str, tuple[str, ...]] = {}
@@ -428,7 +432,8 @@ def _matcher_evidence(record: Mapping[str, Any], skill_id: str) -> dict:
                 "excerpt": entry.get("excerpt"),
             }
     raise EvaluationError(
-        f"no se encontró evidencia del matcher para la habilidad predicha {skill_id!r} en el registro {record.get('source_id')!r}"
+        "no se encontró evidencia del matcher para la habilidad predicha "
+        f"{skill_id!r} en el registro {record.get('source_id')!r}"
     )
 
 
@@ -547,11 +552,7 @@ def compute_metrics(evaluation: EvaluationSet, dataset: Mapping[str, Any], taxon
     tp, fp, fn, tn = cont["tp"], cont["fp"], cont["fn"], cont["tn"]
     precision, recall, f1 = _precision_recall_f1(tp, fp, fn)
 
-    scope = sorted(
-        skill_id
-        for skill_id, counts in cont["per_skill"].items()
-        if sum(counts.values()) > 0
-    )
+    scope = sorted(skill_id for skill_id, counts in cont["per_skill"].items() if sum(counts.values()) > 0)
     per_skill_metrics: dict[str, dict] = {}
     defined: list[str] = []
     for skill_id in scope:
@@ -701,12 +702,8 @@ def build_report(evaluation: EvaluationSet, dataset: Mapping[str, Any], taxonomy
                 "one non-uncertain labeled pair; skills with no defined value (all labels "
                 "not_supported) are excluded and listed explicitly"
             ),
-            "uncertain": (
-                "ambiguous mentions reported separately and excluded from every primary denominator"
-            ),
-            "coverage": (
-                "labeled pairs over all dataset-record x taxonomy-skill pairs, plus annotated records"
-            ),
+            "uncertain": ("ambiguous mentions reported separately and excluded from every primary denominator"),
+            "coverage": ("labeled pairs over all dataset-record x taxonomy-skill pairs, plus annotated records"),
         },
         "label_distribution": {
             "supported": cont["tp"] + cont["fn"],
@@ -723,9 +720,7 @@ def build_report(evaluation: EvaluationSet, dataset: Mapping[str, Any], taxonomy
             "non_uncertain_labeled_pairs": cont["non_uncertain_labeled_pairs"],
             "total_pairs": total_pairs,
             "pair_coverage": cont["labeled_pairs"] / total_pairs if total_pairs else None,
-            "non_uncertain_pair_coverage": (
-                cont["non_uncertain_labeled_pairs"] / total_pairs if total_pairs else None
-            ),
+            "non_uncertain_pair_coverage": (cont["non_uncertain_labeled_pairs"] / total_pairs if total_pairs else None),
             "annotated_records": len(annotated_ids),
             "annotated_record_ids": annotated_ids,
             "annotated_record_coverage": len(annotated_ids) / len(records) if records else None,
@@ -761,8 +756,7 @@ def build_report(evaluation: EvaluationSet, dataset: Mapping[str, Any], taxonomy
         "guardrails": [
             "labels are draft, not gold or human-reviewed; metrics are provisional",
             "uncertain labels are excluded from all primary denominators and reported separately",
-            "unlabeled pairs are excluded from the metrics, never treated as false positives or "
-            "negatives",
+            "unlabeled pairs are excluded from the metrics, never treated as false positives or negatives",
             "not_supported means no explicit positive evidence in the reviewed fields, never that the "
             "person or job lacks the skill",
             "no market coverage: one page of one job board is not a market snapshot",
@@ -771,7 +765,10 @@ def build_report(evaluation: EvaluationSet, dataset: Mapping[str, Any], taxonomy
 
 
 def serialize_evaluation(doc: Mapping[str, Any]) -> bytes:
-    """Serialización JSON canónica en UTF-8 para el artefacto de evaluación (claves ordenadas, sangría de 2 espacios)."""
+    """Serialización JSON canónica en UTF-8 para el artefacto de evaluación.
+
+    Claves ordenadas y sangría de 2 espacios.
+    """
     return (json.dumps(doc, ensure_ascii=True, indent=2, sort_keys=True) + "\n").encode("utf-8")
 
 
